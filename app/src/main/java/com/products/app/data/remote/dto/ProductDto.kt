@@ -1,18 +1,21 @@
 package com.products.app.data.remote.dto
+
+import com.squareup.moshi.Json
+
 data class ProductDto(
     val id: String,
     val status: String?,
-    val domainId: String?,
+    @field:Json(name = "domain_id") val domainId: String?,
     val name: String?,
     val permalink: String?,
-    val mainFeatures: List<MainFeatureDto>?,
+    @field:Json(name = "main_features") val mainFeatures: List<MainFeatureDto>?,
     val attributes: List<AttributeDto>?,
-    val shortDescription: ShortDescriptionDto?,
-    val parentId: String?,
-    val childrenIds: List<String>?,
+    @field:Json(name = "short_description") val shortDescription: ShortDescriptionDto?,
+    @field:Json(name = "parent_id") val parentId: String?,
+    @field:Json(name = "children_ids") val childrenIds: List<String>?,
     val settings: SettingsDto?,
     val pictures: List<PictureDto>?,
-    val buyBoxWinner: BuyBoxWinnerDto?
+    @field:Json(name = "buy_box_winner") val buyBoxWinner: BuyBoxWinnerDto?
 )
 data class MainFeatureDto(
     val id: String?,
@@ -22,8 +25,8 @@ data class MainFeatureDto(
 data class AttributeDto(
     val id: String?,
     val name: String?,
-    val valueId: String?,
-    val valueName: String?,
+    @field:Json(name = "value_id") val valueId: String?,
+    @field:Json(name = "value_name") val valueName: String?,
     val values: List<SimpleIdName>?
 )
 
@@ -33,7 +36,7 @@ data class ShortDescriptionDto(
 )
 
 data class SettingsDto(
-    val listingStrategy: String?
+    @field:Json(name = "listing_strategy") val listingStrategy: String?
 )
 
 data class PictureDto(

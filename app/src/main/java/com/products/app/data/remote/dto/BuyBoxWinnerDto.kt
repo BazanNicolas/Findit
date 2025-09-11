@@ -1,10 +1,13 @@
 package com.products.app.data.remote.dto
+
+import com.squareup.moshi.Json
+
 data class BuyBoxWinnerDto(
-    val itemId: String?,
-    val categoryId: String?,
-    val sellerId: Long?,
+    @field:Json(name = "item_id") val itemId: String?,
+    @field:Json(name = "category_id") val categoryId: String?,
+    @field:Json(name = "seller_id") val sellerId: Long?,
     val price: Double?,
-    val currencyId: String?,
+    @field:Json(name = "currency_id") val currencyId: String?,
     val shipping: ShippingDto?
 )
 

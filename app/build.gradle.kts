@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -18,6 +20,21 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val props = Properties()
+        val localPropsFile = rootProject.file("local.properties")
+        if (localPropsFile.exists()) {
+            props.load(localPropsFile.inputStream())
+        }
+        val mlToken = props.getProperty("ML_ACCESS_TOKEN") ?: ""
+        val mlRefreshToken = props.getProperty("ML_REFRESH_TOKEN") ?: ""
+        val mlClientId = props.getProperty("ML_CLIENT_ID") ?: ""
+        val mlClientSecret = props.getProperty("ML_CLIENT_SECRET") ?: ""
+
+        buildConfigField("String", "ML_ACCESS_TOKEN", "\"$mlToken\"")
+        buildConfigField("String", "ML_REFRESH_TOKEN", "\"$mlRefreshToken\"")
+        buildConfigField("String", "ML_CLIENT_ID", "\"$mlClientId\"")
+        buildConfigField("String", "ML_CLIENT_SECRET", "\"$mlClientSecret\"")
     }
 
     buildTypes {
@@ -39,6 +56,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -69,6 +87,13 @@ dependencies {
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation(libs.converter.moshi)
     implementation(libs.converter.scalars)
     implementation(libs.okhttp.logging.interceptor)
+    
+    // Moshi
+    implementation(libs.moshi)
+    implementation(libs.moshi.kotlin)
+    kapt(libs.moshi.kotlin.codegen)
+    
 }

@@ -1,9 +1,11 @@
 package com.products.app.presentation.productSearch.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -15,18 +17,58 @@ fun ProductSearchScreen(
 ) {
     val state by vm.ui.collectAsState()
 
-    Box(Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Center)
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // Campo de búsqueda
+        OutlinedTextField(
+            value = state.query,
+            onValueChange = vm::onQueryChange,
+            label = { Text("Buscar productos") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(Modifier.height(8.dp))
+
+        // Botón de buscar
+        Button(
+            onClick = { vm.searchFirstPage() },
+            enabled = !state.loading && state.query.isNotBlank()
         ) {
-            Text(text = state.message, style = MaterialTheme.typography.headlineSmall)
-            Spacer(Modifier.height(16.dp))
-            Button(onClick = vm::simulateLoading, enabled = !state.loading) {
-                Text(if (state.loading) "..." else "Probar")
+            Text(if (state.loading) "Buscando..." else "Buscar")
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        // Contenido según estado
+        when {
+            state.loading -> {
+                CircularProgressIndicator()
+            }
+            state.error != null -> {
+                Text("Error: ${state.error}", color = MaterialTheme.colorScheme.error)
+            }
+            state.products.isEmpty() -> {
+                Text("No hay resultados todavía")
+            }
+            else -> {
+                LazyColumn {
+                    items(state.products, key = { it.id }) { product ->
+                        ListItem(
+                            headlineContent = { Text(product.name) },
+                            supportingContent = {
+                                Text(product.thumbnailUrl ?: "Sin imagen")
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    // TODO: Navigate to product detail
+                                }
+                        )
+                        HorizontalDivider()
+                    }
+                }
             }
         }
     }
