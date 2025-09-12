@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.products.app.core.AppResult
 import com.products.app.domain.model.ProductSearchResult
 import com.products.app.domain.repository.ProductsRepository
-import com.products.app.presentation.productSearch.state.ProductSearchUiState
+import com.products.app.presentation.productSearch.ProductSearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ProductSearchViewModel @Inject constructor(
-    private val repo: ProductsRepository   // ⬅️ inyectamos el repositorio
+    private val repo: ProductsRepository
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow(ProductSearchUiState())
@@ -25,7 +25,6 @@ class ProductSearchViewModel @Inject constructor(
         _ui.update { it.copy(query = q) }
     }
 
-    /** Primera página (offset = 0) */
     fun searchFirstPage(limit: Int = 20) = viewModelScope.launch {
         val q = ui.value.query.trim()
         if (q.isEmpty()) return@launch
@@ -38,7 +37,6 @@ class ProductSearchViewModel @Inject constructor(
         }
     }
 
-    /** Siguiente página (usa paging actual para calcular el nuevo offset) */
     fun loadNextPage() = viewModelScope.launch {
         val current = ui.value
         val q = current.query.trim()
@@ -56,7 +54,6 @@ class ProductSearchViewModel @Inject constructor(
         }
     }
 
-    /** Fusiona resultados en el estado (primera página vs append) */
     private fun applyResult(firstPage: Boolean, res: ProductSearchResult) {
         _ui.update {
             val newList = if (firstPage) res.products else it.products + res.products

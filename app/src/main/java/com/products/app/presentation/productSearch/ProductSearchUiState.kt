@@ -1,4 +1,4 @@
-package com.products.app.presentation.productSearch.state
+package com.products.app.presentation.productSearch
 
 import com.products.app.domain.model.Paging
 import com.products.app.domain.model.Product
