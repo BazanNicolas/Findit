@@ -5,7 +5,9 @@ import com.squareup.moshi.Json
 data class SearchResponseDto(
     val keywords: String?,
     val paging: PagingDto,
-    val results: List<ProductDto>
+    val results: List<ProductDto>,
+    val used_attributes: List<AttributeDto>?,
+    val query_type: String?
 )
 
 data class PagingDto(

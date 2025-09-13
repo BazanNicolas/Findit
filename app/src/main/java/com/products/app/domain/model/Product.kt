@@ -13,5 +13,10 @@ data class Product(
     val attributes: List<ProductAttribute>,
     val shortDescription: String?,
     val hasVariants: Boolean,
-    val buyBox: BuyBoxInfo?
+    val buyBox: BuyBoxInfo?,
+    val catalogProductId: String?,
+    val qualityType: String?,
+    val type: String?,
+    val keywords: String?,
+    val siteId: String?
 )

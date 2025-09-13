@@ -10,11 +10,11 @@ fun ProductDto.toDomain(): Product {
         else -> ProductStatus.UNKNOWN
     }
     val pics = (pictures ?: emptyList()).mapNotNull { it.url }
-    val buyBoxInfo = buyBoxWinner?.let {
+    val buyBoxInfo = buy_box_winner?.let {
         val price = it.price
-        val currency = it.currencyId
+        val currency = it.currency_id
         if (price != null && !currency.isNullOrBlank()) {
-            BuyBoxInfo(price = price, currencyId = currency, sellerId = it.sellerId)
+            BuyBoxInfo(price = price, currencyId = currency, sellerId = it.seller_id)
         } else null
     }
 
@@ -22,7 +22,7 @@ fun ProductDto.toDomain(): Product {
         id = id,
         name = name.orEmpty(),
         status = statusEnum,
-        domainId = domainId,
+        domainId = domain_id,
         permalink = permalink?.ifBlank { null },
         thumbnailUrl = pics.firstOrNull(),
         pictureUrls = pics,
@@ -30,12 +30,44 @@ fun ProductDto.toDomain(): Product {
             ProductAttribute(
                 id = it.id,
                 name = it.name,
-                valueId = it.valueId,
-                valueName = it.valueName
+                valueId = it.value_id,
+                valueName = it.value_name
             )
         },
-        shortDescription = shortDescription?.content?.ifBlank { null },
-        hasVariants = !childrenIds.isNullOrEmpty(),
-        buyBox = buyBoxInfo
+        shortDescription = short_description?.content?.ifBlank { null },
+        hasVariants = !children_ids.isNullOrEmpty(),
+        buyBox = buyBoxInfo,
+        catalogProductId = catalog_product_id,
+        qualityType = quality_type,
+        type = type,
+        keywords = keywords,
+        siteId = site_id
+    )
+}
+
+fun SearchResponseDto.toDomain(): ProductSearchResult {
+    return ProductSearchResult(
+        products = results.map { it.toDomain() },
+        paging = paging.toDomain(),
+        keywords = keywords,
+        usedAttributes = used_attributes?.map { it.toDomain() },
+        queryType = query_type
+    )
+}
+
+fun PagingDto.toDomain(): Paging {
+    return Paging(
+        total = total,
+        limit = limit,
+        offset = offset
+    )
+}
+
+fun AttributeDto.toDomain(): ProductAttribute {
+    return ProductAttribute(
+        id = id,
+        name = name,
+        valueId = value_id,
+        valueName = value_name
     )
 }

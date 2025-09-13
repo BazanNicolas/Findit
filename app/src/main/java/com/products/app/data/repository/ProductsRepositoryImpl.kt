@@ -18,13 +18,7 @@ class ProductsRepositoryImpl @Inject constructor(
         limit: Int
     ): AppResult<ProductSearchResult> = try {
         val dto = api.searchProducts(query = query, offset = offset, limit = limit)
-        val products = dto.results.map { it.toDomain() }
-        val paging = Paging(
-            total = dto.paging.total,
-            limit = dto.paging.limit,
-            offset = dto.paging.offset
-        )
-        AppResult.Success(ProductSearchResult(products, paging))
+        AppResult.Success(dto.toDomain())
     } catch (e: Exception) {
         AppResult.Error(e.message ?: "Error desconocido")
     }

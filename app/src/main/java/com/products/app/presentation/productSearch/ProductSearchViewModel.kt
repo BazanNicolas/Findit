@@ -25,7 +25,7 @@ class ProductSearchViewModel @Inject constructor(
         _ui.update { it.copy(query = q) }
     }
 
-    fun searchFirstPage(limit: Int = 20) = viewModelScope.launch {
+    fun searchFirstPage(limit: Int = 1) = viewModelScope.launch {
         val q = ui.value.query.trim()
         if (q.isEmpty()) return@launch
 
