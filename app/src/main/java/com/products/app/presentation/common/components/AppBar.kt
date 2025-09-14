@@ -11,6 +11,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.products.app.R
 import com.products.app.domain.model.SearchSuggestion
 import com.products.app.presentation.common.components.SearchBar
 
@@ -18,7 +20,7 @@ import com.products.app.presentation.common.components.SearchBar
 @Composable
 fun AppBar(
     modifier: Modifier = Modifier,
-    title: String = "Productos",
+    title: String = "",
     searchQuery: String = "",
     onSearchQueryChange: (String) -> Unit = {},
     onSearchClick: () -> Unit = {},
@@ -43,7 +45,7 @@ fun AppBar(
                     )
                 } else {
                     Text(
-                        text = title,
+                        text = if (title.isEmpty()) stringResource(R.string.products_title) else title,
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onPrimary

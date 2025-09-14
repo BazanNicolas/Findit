@@ -6,6 +6,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.products.app.R
 import com.products.app.presentation.common.components.AppBar
 
 @Composable
@@ -16,7 +18,7 @@ fun ProductDetailScreen(
     Scaffold(
         topBar = {
             AppBar(
-                title = "Detalle del Producto",
+                title = stringResource(R.string.product_detail_title),
                 showSearch = false
             )
         }
@@ -30,12 +32,12 @@ fun ProductDetailScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "Producto ID: $productId",
+                text = "${stringResource(R.string.product_id)}: $productId",
                 style = MaterialTheme.typography.headlineMedium
             )
             
             Text(
-                text = "Esta pantalla demuestra cómo el AppBar es reutilizable en diferentes pantallas.",
+                text = stringResource(R.string.product_detail_description),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -50,25 +52,25 @@ fun ProductDetailScreen(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "Características del AppBar:",
+                        text = stringResource(R.string.appbar_features_title),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "• Reutilizable en cualquier pantalla",
+                        text = stringResource(R.string.appbar_feature_reusable),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
-                        text = "• Búsqueda integrada opcional",
+                        text = stringResource(R.string.appbar_feature_search),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
-                        text = "• Título personalizable",
+                        text = stringResource(R.string.appbar_feature_title),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
-                        text = "• Diseño consistente",
+                        text = stringResource(R.string.appbar_feature_design),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }

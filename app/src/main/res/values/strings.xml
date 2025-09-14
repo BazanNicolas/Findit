@@ -1,3 +1,48 @@
 <resources>
     <string name="app_name">Products</string>
+    
+    <!-- Search -->
+    <string name="search_placeholder">Search products...</string>
+    <string name="search_clear">Clear search</string>
+    <string name="search_button">Search</string>
+    <string name="search_products">Search Products</string>
+    <string name="search_products_subtitle">Use the search bar to find products</string>
+    <string name="loading_suggestions">Loading suggestions...</string>
+    
+    <!-- Products -->
+    <string name="products_title">Products</string>
+    <string name="no_products_found">No Products Found</string>
+    <string name="no_products_found_subtitle">Try different search terms</string>
+    <string name="product_image">Product image</string>
+    <string name="product_id">Product ID</string>
+    
+    <!-- Error States -->
+    <string name="error_title">Error</string>
+    <string name="error_message">An unexpected error occurred</string>
+    <string name="search_error">Search Error</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="error_getting_suggestions">Error getting suggestions</string>
+    <string name="retry">Retry</string>
+    
+    <!-- Loading States -->
+    <string name="loading">Loading...</string>
+    
+    <!-- Empty States -->
+    <string name="empty_title">No content</string>
+    <string name="empty_subtitle">No items found to display</string>
+    
+    <!-- Product Detail -->
+    <string name="product_detail_title">Product Detail</string>
+    <string name="product_detail_description">This screen demonstrates how the AppBar is reusable across different screens.</string>
+    <string name="appbar_features_title">AppBar Features:</string>
+    <string name="appbar_feature_reusable">• Reusable across any screen</string>
+    <string name="appbar_feature_search">• Optional integrated search</string>
+    <string name="appbar_feature_title">• Customizable title</string>
+    <string name="appbar_feature_design">• Consistent design</string>
+    
+    <!-- Icons -->
+    <string name="icon_search">🔍</string>
+    <string name="icon_sad">😔</string>
+    <string name="icon_warning">⚠️</string>
+    <string name="icon_check">✓</string>
 </resources>

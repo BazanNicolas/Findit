@@ -28,6 +28,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.products.app.R
 
 @Composable
 fun SearchBar(
@@ -35,7 +37,7 @@ fun SearchBar(
     onQueryChange: (String) -> Unit,
     onSearchClick: () -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: String = "Buscar productos...",
+    placeholder: String = "",
     enabled: Boolean = true
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -51,7 +53,7 @@ fun SearchBar(
             onValueChange = onQueryChange,
             placeholder = {
                 Text(
-                    text = placeholder,
+                    text = if (placeholder.isEmpty()) stringResource(R.string.search_placeholder) else placeholder,
                     color = Color.White.copy(alpha = 0.7f),
                     style = MaterialTheme.typography.bodySmall
                 )
@@ -64,7 +66,7 @@ fun SearchBar(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Limpiar búsqueda",
+                            contentDescription = stringResource(R.string.search_clear),
                             tint = Color.White.copy(alpha = 0.7f),
                             modifier = Modifier.size(16.dp)
                         )
@@ -108,7 +110,7 @@ fun SearchBar(
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "Buscar",
+                contentDescription = stringResource(R.string.search_button),
                 tint = if (enabled && query.isNotBlank()) 
                     Color.White 
                 else 

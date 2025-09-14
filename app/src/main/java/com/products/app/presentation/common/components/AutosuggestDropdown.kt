@@ -18,6 +18,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.products.app.R
 import com.products.app.domain.model.SearchSuggestion
 
 @Composable
@@ -50,7 +52,7 @@ fun AutosuggestDropdown(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Loading suggestions...",
+                        text = stringResource(R.string.loading_suggestions),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -117,7 +119,7 @@ private fun AutosuggestItem(
         if (suggestion.isVerifiedStore) {
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "✓",
+                text = stringResource(R.string.icon_check),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold

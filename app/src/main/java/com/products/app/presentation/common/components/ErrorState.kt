@@ -7,12 +7,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.products.app.R
 
 @Composable
 fun ErrorState(
-    icon: String = "⚠️",
-    title: String = "Error",
-    message: String = "Ocurrió un error inesperado",
+    icon: String = "",
+    title: String = "",
+    message: String = "",
     onRetry: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -26,17 +28,17 @@ fun ErrorState(
             modifier = Modifier.padding(32.dp)
         ) {
             Text(
-                text = icon,
+                text = if (icon.isEmpty()) stringResource(R.string.icon_warning) else icon,
                 style = MaterialTheme.typography.displayLarge
             )
             Text(
-                text = title,
+                text = if (title.isEmpty()) stringResource(R.string.error_title) else title,
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.error,
                 textAlign = TextAlign.Center
             )
             Text(
-                text = message,
+                text = if (message.isEmpty()) stringResource(R.string.error_message) else message,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
@@ -49,7 +51,7 @@ fun ErrorState(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Text("Reintentar")
+                    Text(stringResource(R.string.retry))
                 }
             }
         }

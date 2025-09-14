@@ -27,6 +27,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.products.app.R
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.products.app.App
@@ -56,12 +58,12 @@ fun ProductCard(
         ) {
             AsyncImage(
                 model = imageRequest,
-                contentDescription = "Imagen de ${product.name}",
+                contentDescription = "${stringResource(R.string.product_image)} ${product.name}",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
                     .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Fit
             )
             
             Column(

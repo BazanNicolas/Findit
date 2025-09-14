@@ -20,6 +20,6 @@ class ProductsRepositoryImpl @Inject constructor(
             val dto = api.searchProducts(query = query, offset = offset, limit = limit)
             AppResult.Success(dto.toDomain())
         } catch (e: Exception) {
-            AppResult.Error(e.message ?: "Error desconocido")
+            AppResult.Error(e.message ?: "Unknown error")
         }
 }

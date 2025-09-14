@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.products.app.R
 
 @Composable
 fun PaginationLoadingIndicator(
@@ -38,7 +40,7 @@ fun PaginationErrorIndicator(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TextButton(onClick = onRetry) {
-            Text("Retry")
+            Text(stringResource(R.string.retry))
         }
     }
 }

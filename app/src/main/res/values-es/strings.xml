@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">Productos</string>
+    
+    <!-- Search -->
+    <string name="search_placeholder">Buscar productos...</string>
+    <string name="search_clear">Limpiar búsqueda</string>
+    <string name="search_button">Buscar</string>
+    <string name="search_products">Buscar Productos</string>
+    <string name="search_products_subtitle">Usa la barra de búsqueda para encontrar productos</string>
+    <string name="loading_suggestions">Cargando sugerencias...</string>
+    
+    <!-- Products -->
+    <string name="products_title">Productos</string>
+    <string name="no_products_found">No se encontraron productos</string>
+    <string name="no_products_found_subtitle">Prueba con términos de búsqueda diferentes</string>
+    <string name="product_image">Imagen del producto</string>
+    <string name="product_id">ID del producto</string>
+    
+    <!-- Error States -->
+    <string name="error_title">Error</string>
+    <string name="error_message">Ocurrió un error inesperado</string>
+    <string name="search_error">Error de búsqueda</string>
+    <string name="unknown_error">Error desconocido</string>
+    <string name="error_getting_suggestions">Error al obtener sugerencias</string>
+    <string name="retry">Reintentar</string>
+    
+    <!-- Loading States -->
+    <string name="loading">Cargando...</string>
+    
+    <!-- Empty States -->
+    <string name="empty_title">No hay contenido</string>
+    <string name="empty_subtitle">No se encontraron elementos para mostrar</string>
+    
+    <!-- Product Detail -->
+    <string name="product_detail_title">Detalle del Producto</string>
+    <string name="product_detail_description">Esta pantalla demuestra cómo el AppBar es reutilizable en diferentes pantallas.</string>
+    <string name="appbar_features_title">Características del AppBar:</string>
+    <string name="appbar_feature_reusable">• Reutilizable en cualquier pantalla</string>
+    <string name="appbar_feature_search">• Búsqueda integrada opcional</string>
+    <string name="appbar_feature_title">• Título personalizable</string>
+    <string name="appbar_feature_design">• Diseño consistente</string>
+    
+    <!-- Icons -->
+    <string name="icon_search">🔍</string>
+    <string name="icon_sad">😔</string>
+    <string name="icon_warning">⚠️</string>
+    <string name="icon_check">✓</string>
+</resources>

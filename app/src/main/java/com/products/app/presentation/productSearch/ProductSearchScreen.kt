@@ -13,6 +13,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.products.app.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.products.app.presentation.common.components.AppBar
 import com.products.app.presentation.common.components.EmptyState
@@ -32,7 +34,7 @@ fun ProductSearchScreen(
     Scaffold(
         topBar = {
             AppBar(
-                title = "Products",
+                title = stringResource(R.string.products_title),
                 searchQuery = state.query,
                 onSearchQueryChange = vm::onQueryChange,
                 onSearchClick = { vm.searchFirstPage() },
@@ -57,23 +59,23 @@ fun ProductSearchScreen(
                 }
                 state.error != null -> {
                     ErrorState(
-                        title = "Search Error",
-                        message = state.error ?: "Unknown error",
+                        title = stringResource(R.string.search_error),
+                        message = state.error ?: stringResource(R.string.unknown_error),
                         onRetry = { vm.searchFirstPage() }
                     )
                 }
                 state.products.isEmpty() && state.query.isBlank() -> {
                     EmptyState(
-                        icon = "🔍",
-                        title = "Search Products",
-                        subtitle = "Use the search bar to find products"
+                        icon = stringResource(R.string.icon_search),
+                        title = stringResource(R.string.search_products),
+                        subtitle = stringResource(R.string.search_products_subtitle)
                     )
                 }
                 state.products.isEmpty() && state.query.isNotBlank() && !state.loading -> {
                     EmptyState(
-                        icon = "😔",
-                        title = "No Products Found",
-                        subtitle = "Try different search terms"
+                        icon = stringResource(R.string.icon_sad),
+                        title = stringResource(R.string.no_products_found),
+                        subtitle = stringResource(R.string.no_products_found_subtitle)
                     )
                 }
                 else -> {

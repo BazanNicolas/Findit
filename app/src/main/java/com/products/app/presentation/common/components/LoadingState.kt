@@ -6,10 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.products.app.R
 
 @Composable
 fun LoadingState(
-    message: String = "Cargando...",
+    message: String = "",
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -24,7 +26,7 @@ fun LoadingState(
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = message,
+                text = if (message.isEmpty()) stringResource(R.string.loading) else message,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
