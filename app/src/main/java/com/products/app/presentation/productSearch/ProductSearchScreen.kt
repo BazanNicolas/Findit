@@ -27,6 +27,7 @@ import com.products.app.presentation.productSearch.components.InfiniteScrollHand
 
 @Composable
 fun ProductSearchScreen(
+    onProductClick: (com.products.app.domain.model.Product) -> Unit = {},
     vm: ProductSearchViewModel = hiltViewModel()
 ) {
     val state by vm.ui.collectAsState()
@@ -105,7 +106,7 @@ fun ProductSearchScreen(
                                 product = product,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { }
+                                    .clickable { onProductClick(product) }
                             )
                         }
                         

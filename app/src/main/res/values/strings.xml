@@ -32,13 +32,16 @@
     <string name="empty_subtitle">No items found to display</string>
     
     <!-- Product Detail -->
-    <string name="product_detail_title">Product Detail</string>
-    <string name="product_detail_description">This screen demonstrates how the AppBar is reusable across different screens.</string>
-    <string name="appbar_features_title">AppBar Features:</string>
-    <string name="appbar_feature_reusable">• Reusable across any screen</string>
-    <string name="appbar_feature_search">• Optional integrated search</string>
-    <string name="appbar_feature_title">• Customizable title</string>
-    <string name="appbar_feature_design">• Consistent design</string>
+    <string name="product_details">Product Details</string>
+    <string name="back">Back</string>
+    <string name="family">Family</string>
+    <string name="quality_type">Quality Type</string>
+    <string name="main_features">Main Features</string>
+    <string name="attributes">Attributes</string>
+    <string name="description">Description</string>
+    <string name="variants">Variants</string>
+    <string name="not_specified">Not specified</string>
+    <string name="selected">Selected</string>
     
     <!-- Search History -->
     <string name="recent_searches">Recent searches</string>
