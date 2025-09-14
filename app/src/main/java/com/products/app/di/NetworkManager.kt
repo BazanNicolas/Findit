@@ -16,6 +16,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -24,6 +25,11 @@ object NetworkModule {
 
     @Provides @Singleton
     fun provideMoshi(): Moshi = Moshi.Builder()
+        .add(KotlinJsonAdapterFactory())
+        .build()
+
+    @Provides @Singleton @Named("autosuggest")
+    fun provideAutosuggestMoshi(): Moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()
 
@@ -38,10 +44,24 @@ object NetworkModule {
             .build()
     }
 
+    @Provides @Singleton @Named("autosuggest")
+    fun provideAutosuggestOkHttp(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .build()
+    }
+
     @Provides @Singleton
     fun provideRetrofit(client: OkHttpClient, moshi: Moshi): Retrofit =
         Retrofit.Builder()
             .baseUrl("https://api.mercadolibre.com/")
+            .client(client)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+
+    @Provides @Singleton @Named("autosuggest")
+    fun provideAutosuggestRetrofit(@Named("autosuggest") client: OkHttpClient, @Named("autosuggest") moshi: Moshi): Retrofit =
+        Retrofit.Builder()
+            .baseUrl("https://http2.mlstatic.com/")
             .client(client)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()

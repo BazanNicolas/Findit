@@ -36,7 +36,12 @@ fun ProductSearchScreen(
                 searchQuery = state.query,
                 onSearchQueryChange = vm::onQueryChange,
                 onSearchClick = { vm.searchFirstPage() },
-                showSearch = true
+                showSearch = true,
+                suggestions = state.suggestions,
+                showSuggestions = state.showSuggestions,
+                loadingSuggestions = state.loadingSuggestions,
+                onSuggestionClick = vm::onSuggestionClick,
+                onHideSuggestions = vm::hideSuggestions
             )
         }
     ) { paddingValues ->
@@ -57,14 +62,21 @@ fun ProductSearchScreen(
                         onRetry = { vm.searchFirstPage() }
                     )
                 }
-                state.products.isEmpty() && !state.isInitialLoad -> {
+                state.products.isEmpty() && state.query.isBlank() -> {
+                    EmptyState(
+                        icon = "🔍",
+                        title = "Search Products",
+                        subtitle = "Use the search bar to find products"
+                    )
+                }
+                state.products.isEmpty() && state.query.isNotBlank() && !state.loading -> {
                     EmptyState(
                         icon = "😔",
                         title = "No Products Found",
                         subtitle = "Try different search terms"
                     )
                 }
-                state.products.isNotEmpty() -> {
+                else -> {
                     val gridState = remember { LazyStaggeredGridState() }
                     
                     InfiniteScrollHandler(
@@ -86,7 +98,7 @@ fun ProductSearchScreen(
                                 product = product,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { /* Handle product click */ }
+                                    .clickable { }
                             )
                         }
                         
@@ -106,13 +118,6 @@ fun ProductSearchScreen(
                             }
                         }
                     }
-                }
-                else -> {
-                    EmptyState(
-                        icon = "🔍",
-                        title = "Search Products",
-                        subtitle = "Use the search bar to find products"
-                    )
                 }
             }
         }

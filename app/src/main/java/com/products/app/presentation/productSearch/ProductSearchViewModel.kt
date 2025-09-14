@@ -7,6 +7,7 @@ import com.products.app.core.PaginationConstants
 import com.products.app.domain.model.ProductSearchResult
 import com.products.app.domain.usecase.SearchProductsUseCase
 import com.products.app.domain.usecase.LoadMoreProductsUseCase
+import com.products.app.domain.usecase.GetAutosuggestUseCase
 import com.products.app.presentation.productSearch.ProductSearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -18,14 +19,83 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class ProductSearchViewModel @Inject constructor(
     private val searchProductsUseCase: SearchProductsUseCase,
-    private val loadMoreProductsUseCase: LoadMoreProductsUseCase
+    private val loadMoreProductsUseCase: LoadMoreProductsUseCase,
+    private val getAutosuggestUseCase: GetAutosuggestUseCase
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow(ProductSearchUiState())
     val ui: StateFlow<ProductSearchUiState> = _ui
 
     fun onQueryChange(q: String) {
-        _ui.update { it.copy(query = q) }
+        _ui.update { 
+            it.copy(
+                query = q,
+                showSuggestions = q.isNotBlank() && !it.loading
+            ) 
+        }
+        
+        if (q.isNotBlank()) {
+            loadSuggestions(q)
+        } else {
+            _ui.update { 
+                it.copy(
+                    suggestions = emptyList(), 
+                    showSuggestions = false,
+                    loadingSuggestions = false
+                ) 
+            }
+        }
+    }
+
+    private fun loadSuggestions(query: String) = viewModelScope.launch {
+        if (query.length < 2) {
+            _ui.update { 
+                it.copy(
+                    suggestions = emptyList(),
+                    loadingSuggestions = false,
+                    showSuggestions = it.query.isNotBlank() && !it.loading
+                ) 
+            }
+            return@launch
+        }
+        
+        _ui.update { it.copy(loadingSuggestions = true) }
+        
+        when (val result = getAutosuggestUseCase(query)) {
+            is AppResult.Success -> {
+                _ui.update { 
+                    it.copy(
+                        suggestions = result.data,
+                        loadingSuggestions = false,
+                        showSuggestions = it.query.isNotBlank() && !it.loading
+                    ) 
+                }
+            }
+            is AppResult.Error -> {
+                _ui.update { 
+                    it.copy(
+                        suggestions = emptyList(),
+                        loadingSuggestions = false,
+                        showSuggestions = it.query.isNotBlank() && !it.loading
+                    ) 
+                }
+            }
+        }
+    }
+
+    fun onSuggestionClick(query: String) {
+        _ui.update { 
+            it.copy(
+                query = query,
+                showSuggestions = false,
+                suggestions = emptyList()
+            ) 
+        }
+        searchFirstPage()
+    }
+
+    fun hideSuggestions() {
+        _ui.update { it.copy(showSuggestions = false) }
     }
 
     fun searchFirstPage(limit: Int = PaginationConstants.DEFAULT_PAGE_SIZE) = viewModelScope.launch {
@@ -37,7 +107,9 @@ class ProductSearchViewModel @Inject constructor(
                 loading = true, 
                 error = null, 
                 paginationError = null,
-                isInitialLoad = true
+                isInitialLoad = true,
+                showSuggestions = false,
+                suggestions = emptyList()
             ) 
         }
 

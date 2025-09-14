@@ -17,7 +17,7 @@ fun ProductDetailScreen(
         topBar = {
             AppBar(
                 title = "Detalle del Producto",
-                showSearch = false // No search in detail screen
+                showSearch = false
             )
         }
     ) { paddingValues ->

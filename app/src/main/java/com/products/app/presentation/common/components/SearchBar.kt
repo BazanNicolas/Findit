@@ -1,19 +1,32 @@
 package com.products.app.presentation.common.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -27,11 +40,6 @@ fun SearchBar(
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    
-    // Deseleccionar el input cuando se hace clic en buscar
-    LaunchedEffect(Unit) {
-        // Este efecto se ejecuta cuando se monta el componente
-    }
     
     Row(
         modifier = modifier,
@@ -65,6 +73,13 @@ fun SearchBar(
             },
             singleLine = true,
             enabled = enabled,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    onSearchClick()
+                    focusManager.clearFocus()
+                }
+            ),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.White.copy(alpha = 0.7f),
                 unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
@@ -84,7 +99,7 @@ fun SearchBar(
         IconButton(
             onClick = {
                 onSearchClick()
-                focusManager.clearFocus() // Deseleccionar el input
+                focusManager.clearFocus()
             },
             enabled = enabled && query.isNotBlank(),
             modifier = Modifier
