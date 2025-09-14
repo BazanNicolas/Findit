@@ -12,14 +12,14 @@ class ProductsRepositoryImpl @Inject constructor(
     private val api: ProductsApi
 ) : ProductsRepository {
 
-    override suspend fun search(
-        query: String,
-        offset: Int,
-        limit: Int
-    ): AppResult<ProductSearchResult> = try {
-        val dto = api.searchProducts(query = query, offset = offset, limit = limit)
-        AppResult.Success(dto.toDomain())
-    } catch (e: Exception) {
-        AppResult.Error(e.message ?: "Error desconocido")
-    }
+        override suspend fun search(
+            query: String,
+            offset: Int,
+            limit: Int
+        ): AppResult<ProductSearchResult> = try {
+            val dto = api.searchProducts(query = query, offset = offset, limit = limit)
+            AppResult.Success(dto.toDomain())
+        } catch (e: Exception) {
+            AppResult.Error(e.message ?: "Error desconocido")
+        }
 }

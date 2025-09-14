@@ -4,7 +4,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,7 +18,10 @@ import com.products.app.presentation.common.components.AppBar
 import com.products.app.presentation.common.components.EmptyState
 import com.products.app.presentation.common.components.ErrorState
 import com.products.app.presentation.common.components.LoadingState
+import com.products.app.presentation.common.components.PaginationLoadingIndicator
+import com.products.app.presentation.common.components.PaginationErrorIndicator
 import com.products.app.presentation.productSearch.components.ProductCard
+import com.products.app.presentation.productSearch.components.InfiniteScrollHandler
 
 @Composable
 fun ProductSearchScreen(
@@ -27,7 +32,7 @@ fun ProductSearchScreen(
     Scaffold(
         topBar = {
             AppBar(
-                title = "Productos",
+                title = "Products",
                 searchQuery = state.query,
                 onSearchQueryChange = vm::onQueryChange,
                 onSearchClick = { vm.searchFirstPage() },
@@ -43,33 +48,41 @@ fun ProductSearchScreen(
         ) {
             when {
                 state.loading -> {
-                    LoadingState(
-                        message = "Buscando productos..."
-                    )
+                    LoadingState()
                 }
                 state.error != null -> {
                     ErrorState(
-                        title = "Error al buscar productos",
-                        message = state.error ?: "Error desconocido",
+                        title = "Search Error",
+                        message = state.error ?: "Unknown error",
                         onRetry = { vm.searchFirstPage() }
                     )
                 }
                 state.products.isEmpty() && state.query.isBlank() -> {
                     EmptyState(
                         icon = "🔍",
-                        title = "Busca productos",
-                        subtitle = "Usa la barra de búsqueda para encontrar productos"
+                        title = "Search Products",
+                        subtitle = "Use the search bar to find products"
                     )
                 }
                 state.products.isEmpty() && state.query.isNotBlank() && !state.loading -> {
                     EmptyState(
                         icon = "😔",
-                        title = "No se encontraron productos",
-                        subtitle = "Intenta con otros términos de búsqueda"
+                        title = "No Products Found",
+                        subtitle = "Try different search terms"
                     )
                 }
                 else -> {
+                    val gridState = remember { LazyStaggeredGridState() }
+                    
+                    InfiniteScrollHandler(
+                        gridState = gridState,
+                        onLoadMore = vm::loadNextPage,
+                        isLoading = state.loadingMore,
+                        hasReachedEnd = state.hasReachedEnd
+                    )
+                    
                     LazyVerticalStaggeredGrid(
+                        state = gridState,
                         columns = StaggeredGridCells.Fixed(2),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalItemSpacing = 12.dp,
@@ -82,6 +95,22 @@ fun ProductSearchScreen(
                                     .fillMaxWidth()
                                     .clickable { /* Handle product click */ }
                             )
+                        }
+                        
+                        if (state.loadingMore) {
+                            item(span = StaggeredGridItemSpan.FullLine) {
+                                PaginationLoadingIndicator()
+                            }
+                        }
+                        
+                        val paginationError = state.paginationError
+                        if (paginationError != null) {
+                            item(span = StaggeredGridItemSpan.FullLine) {
+                                PaginationErrorIndicator(
+                                    error = paginationError,
+                                    onRetry = vm::retryPagination
+                                )
+                            }
                         }
                     }
                 }

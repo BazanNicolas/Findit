@@ -17,6 +17,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +38,13 @@ fun ProductCard(
     product: Product,
     onProductClick: (Product) -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val imageRequest: ImageRequest = remember(product.thumbnailUrl) {
+        ImageRequest.Builder(context)
+            .data(product.thumbnailUrl)
+            .build()
+    }
+    
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
@@ -47,9 +55,7 @@ fun ProductCard(
             modifier = Modifier.fillMaxWidth()
         ) {
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(product.thumbnailUrl)
-                    .build(),
+                model = imageRequest,
                 contentDescription = "Imagen de ${product.name}",
                 modifier = Modifier
                     .fillMaxWidth()

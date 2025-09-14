@@ -3,8 +3,10 @@ package com.products.app.presentation.productSearch
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.products.app.core.AppResult
+import com.products.app.core.PaginationConstants
 import com.products.app.domain.model.ProductSearchResult
-import com.products.app.domain.repository.ProductsRepository
+import com.products.app.domain.usecase.SearchProductsUseCase
+import com.products.app.domain.usecase.LoadMoreProductsUseCase
 import com.products.app.presentation.productSearch.ProductSearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -15,7 +17,8 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ProductSearchViewModel @Inject constructor(
-    private val repo: ProductsRepository
+    private val searchProductsUseCase: SearchProductsUseCase,
+    private val loadMoreProductsUseCase: LoadMoreProductsUseCase
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow(ProductSearchUiState())
@@ -25,15 +28,28 @@ class ProductSearchViewModel @Inject constructor(
         _ui.update { it.copy(query = q) }
     }
 
-    fun searchFirstPage(limit: Int = 1) = viewModelScope.launch {
+    fun searchFirstPage(limit: Int = PaginationConstants.DEFAULT_PAGE_SIZE) = viewModelScope.launch {
         val q = ui.value.query.trim()
         if (q.isEmpty()) return@launch
 
-        _ui.update { it.copy(loading = true, error = null) }
+        _ui.update { 
+            it.copy(
+                loading = true, 
+                error = null, 
+                paginationError = null,
+                isInitialLoad = true
+            ) 
+        }
 
-        when (val res = repo.search(query = q, offset = 0, limit = limit)) {
+        when (val res = searchProductsUseCase(query = q, offset = 0, limit = limit)) {
             is AppResult.Success -> applyResult(firstPage = true, res = res.data)
-            is AppResult.Error -> _ui.update { it.copy(loading = false, error = res.message) }
+            is AppResult.Error -> _ui.update { 
+                it.copy(
+                    loading = false, 
+                    error = res.message,
+                    isInitialLoad = false
+                ) 
+            }
         }
     }
 
@@ -42,27 +58,51 @@ class ProductSearchViewModel @Inject constructor(
         val q = current.query.trim()
         val paging = current.paging ?: return@launch
 
-        // Prevent unnecessary API calls when all items are loaded
+        if (current.loadingMore || current.hasReachedEnd || q.isEmpty()) return@launch
+        
         val nextOffset = paging.offset + paging.limit
-        if (current.products.size >= paging.total) return@launch
 
-        _ui.update { it.copy(loading = true, error = null) }
+        _ui.update { 
+            it.copy(
+                loadingMore = true, 
+                paginationError = null
+            ) 
+        }
 
-        when (val res = repo.search(query = q, offset = nextOffset, limit = paging.limit)) {
+        when (val res = loadMoreProductsUseCase(query = q, currentOffset = paging.offset, limit = paging.limit)) {
             is AppResult.Success -> applyResult(firstPage = false, res = res.data)
-            is AppResult.Error -> _ui.update { it.copy(loading = false, error = res.message) }
+            is AppResult.Error -> _ui.update { 
+                it.copy(
+                    loadingMore = false, 
+                    paginationError = res.message
+                ) 
+            }
         }
     }
 
     private fun applyResult(firstPage: Boolean, res: ProductSearchResult) {
         _ui.update {
             val newList = if (firstPage) res.products else it.products + res.products
+            val hasReachedEnd = res.products.isEmpty()
+            
             it.copy(
                 loading = false,
+                loadingMore = false,
                 products = newList,
                 paging = res.paging,
-                error = null
+                hasReachedEnd = hasReachedEnd,
+                error = null,
+                paginationError = null,
+                isInitialLoad = false
             )
         }
+    }
+    
+    fun retryPagination() = viewModelScope.launch {
+        loadNextPage()
+    }
+    
+    fun clearError() {
+        _ui.update { it.copy(error = null, paginationError = null) }
     }
 }
