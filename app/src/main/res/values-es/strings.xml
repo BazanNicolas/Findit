@@ -40,6 +40,13 @@
     <string name="appbar_feature_title">• Título personalizable</string>
     <string name="appbar_feature_design">• Diseño consistente</string>
     
+    <!-- Search History -->
+    <string name="recent_searches">Búsquedas recientes</string>
+    <string name="clear_history">Limpiar historial</string>
+    <string name="time_now">ahora</string>
+    <string name="time_minutes">m</string>
+    <string name="time_hours">h</string>
+    
     <!-- Icons -->
     <string name="icon_search">🔍</string>
     <string name="icon_sad">😔</string>

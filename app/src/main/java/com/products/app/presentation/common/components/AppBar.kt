@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import com.products.app.R
+import com.products.app.domain.model.SearchHistory
 import com.products.app.domain.model.SearchSuggestion
 import com.products.app.presentation.common.components.SearchBar
 
@@ -28,8 +29,13 @@ fun AppBar(
     suggestions: List<SearchSuggestion> = emptyList(),
     showSuggestions: Boolean = false,
     loadingSuggestions: Boolean = false,
+    searchHistory: List<SearchHistory> = emptyList(),
+    showSearchHistory: Boolean = false,
     onSuggestionClick: (String) -> Unit = {},
-    onHideSuggestions: () -> Unit = {}
+    onHistoryClick: (String) -> Unit = {},
+    onClearHistory: () -> Unit = {},
+    onHideSuggestions: () -> Unit = {},
+    onShowSearchHistory: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
     
@@ -41,6 +47,13 @@ fun AppBar(
                         query = searchQuery,
                         onQueryChange = onSearchQueryChange,
                         onSearchClick = onSearchClick,
+                        onFocusChange = { isFocused ->
+                            if (isFocused && searchQuery.isBlank()) {
+                                onShowSearchHistory()
+                            } else if (!isFocused && searchQuery.isBlank()) {
+                                onHideSuggestions()
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
                 } else {
@@ -58,14 +71,20 @@ fun AppBar(
             )
         )
         
-        if (showSearch && showSuggestions) {
+        if (showSearch && (showSuggestions || showSearchHistory)) {
             AutosuggestDropdown(
                 suggestions = suggestions,
                 loadingSuggestions = loadingSuggestions,
+                searchHistory = searchHistory,
                 onSuggestionClick = { query ->
                     onSuggestionClick(query)
                     focusManager.clearFocus()
                 },
+                onHistoryClick = { query ->
+                    onHistoryClick(query)
+                    focusManager.clearFocus()
+                },
+                onClearHistory = onClearHistory,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)

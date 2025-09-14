@@ -42,8 +42,13 @@ fun ProductSearchScreen(
                 suggestions = state.suggestions,
                 showSuggestions = state.showSuggestions,
                 loadingSuggestions = state.loadingSuggestions,
+                searchHistory = state.searchHistory,
+                showSearchHistory = state.showSearchHistory,
                 onSuggestionClick = vm::onSuggestionClick,
-                onHideSuggestions = vm::hideSuggestions
+                onHistoryClick = vm::onHistoryClick,
+                onClearHistory = vm::clearSearchHistory,
+                onHideSuggestions = vm::hideSuggestions,
+                onShowSearchHistory = vm::showSearchHistory
             )
         }
     ) { paddingValues ->

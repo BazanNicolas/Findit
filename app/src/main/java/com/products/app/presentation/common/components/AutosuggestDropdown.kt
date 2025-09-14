@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -19,23 +21,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import com.products.app.R
+import com.products.app.domain.model.SearchHistory
 import com.products.app.domain.model.SearchSuggestion
 
 @Composable
 fun AutosuggestDropdown(
     suggestions: List<SearchSuggestion>,
     loadingSuggestions: Boolean,
+    searchHistory: List<SearchHistory>,
     onSuggestionClick: (String) -> Unit,
+    onHistoryClick: (String) -> Unit,
+    onClearHistory: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (suggestions.isEmpty() && !loadingSuggestions) return
+    if (suggestions.isEmpty() && !loadingSuggestions && searchHistory.isEmpty()) return
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .clip(RoundedCornerShape(12.dp)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column {
             if (loadingSuggestions) {
@@ -61,17 +69,63 @@ fun AutosuggestDropdown(
                 LazyColumn(
                     modifier = Modifier.heightIn(max = 200.dp)
                 ) {
-                    items(suggestions) { suggestion ->
-                        AutosuggestItem(
-                            suggestion = suggestion,
-                            onClick = { onSuggestionClick(suggestion.query) }
-                        )
+                    if (searchHistory.isNotEmpty()) {
+                        items(searchHistory) { history ->
+                            SearchHistoryItem(
+                                history = history,
+                                onClick = { onHistoryClick(history.query) }
+                            )
+                        }
+                    }
+                    
+                    if (suggestions.isNotEmpty()) {
+                        items(suggestions) { suggestion ->
+                            AutosuggestItem(
+                                suggestion = suggestion,
+                                onClick = { onSuggestionClick(suggestion.query) }
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
+
+@Composable
+private fun SearchHistoryItem(
+    history: SearchHistory,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 12.dp, horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Default.Refresh,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
+        )
+        
+        Spacer(modifier = Modifier.width(12.dp))
+        
+        Text(
+            text = history.query,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
+        )
+        
+    }
+}
+
 
 @Composable
 private fun AutosuggestItem(
@@ -83,14 +137,14 @@ private fun AutosuggestItem(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(vertical = 12.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = Icons.Default.Search,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-            modifier = Modifier.size(16.dp)
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
         )
         Spacer(modifier = Modifier.width(12.dp))
         

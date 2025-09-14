@@ -8,6 +8,10 @@ import com.products.app.domain.model.ProductSearchResult
 import com.products.app.domain.usecase.SearchProductsUseCase
 import com.products.app.domain.usecase.LoadMoreProductsUseCase
 import com.products.app.domain.usecase.GetAutosuggestUseCase
+import com.products.app.domain.usecase.SaveSearchUseCase
+import com.products.app.domain.usecase.GetRecentSearchesUseCase
+import com.products.app.domain.usecase.GetMatchingSearchesUseCase
+import com.products.app.domain.usecase.ClearSearchHistoryUseCase
 import com.products.app.presentation.productSearch.ProductSearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -20,7 +24,11 @@ import kotlinx.coroutines.launch
 class ProductSearchViewModel @Inject constructor(
     private val searchProductsUseCase: SearchProductsUseCase,
     private val loadMoreProductsUseCase: LoadMoreProductsUseCase,
-    private val getAutosuggestUseCase: GetAutosuggestUseCase
+    private val getAutosuggestUseCase: GetAutosuggestUseCase,
+    private val saveSearchUseCase: SaveSearchUseCase,
+    private val getRecentSearchesUseCase: GetRecentSearchesUseCase,
+    private val getMatchingSearchesUseCase: GetMatchingSearchesUseCase,
+    private val clearSearchHistoryUseCase: ClearSearchHistoryUseCase
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow(ProductSearchUiState())
@@ -30,18 +38,22 @@ class ProductSearchViewModel @Inject constructor(
         _ui.update { 
             it.copy(
                 query = q,
-                showSuggestions = q.isNotBlank() && !it.loading
+                showSuggestions = q.isNotBlank() && !it.loading,
+                showSearchHistory = q.isBlank()
             ) 
         }
         
         if (q.isNotBlank()) {
             loadSuggestions(q)
+            loadMatchingHistory(q)
         } else {
             _ui.update { 
                 it.copy(
                     suggestions = emptyList(), 
                     showSuggestions = false,
-                    loadingSuggestions = false
+                    loadingSuggestions = false,
+                    showSearchHistory = false,
+                    searchHistory = emptyList()
                 ) 
             }
         }
@@ -95,7 +107,57 @@ class ProductSearchViewModel @Inject constructor(
     }
 
     fun hideSuggestions() {
-        _ui.update { it.copy(showSuggestions = false) }
+        _ui.update { 
+            it.copy(
+                showSuggestions = false,
+                suggestions = emptyList(),
+                showSearchHistory = false
+            ) 
+        }
+    }
+    
+    private fun loadRecentHistory() = viewModelScope.launch {
+        getRecentSearchesUseCase(10).collect { history ->
+            _ui.update { 
+                it.copy(searchHistory = history) 
+            }
+        }
+    }
+    
+    private fun loadMatchingHistory(query: String) = viewModelScope.launch {
+        getMatchingSearchesUseCase(query, 5).collect { history ->
+            _ui.update { 
+                it.copy(searchHistory = history) 
+            }
+        }
+    }
+    
+    fun onHistoryClick(query: String) {
+        _ui.update { 
+            it.copy(
+                query = query,
+                showSuggestions = false,
+                suggestions = emptyList(),
+                showSearchHistory = false
+            ) 
+        }
+        searchFirstPage()
+    }
+    
+    fun clearSearchHistory() = viewModelScope.launch {
+        clearSearchHistoryUseCase()
+        _ui.update { 
+            it.copy(searchHistory = emptyList()) 
+        }
+    }
+    
+    fun showSearchHistory() = viewModelScope.launch {
+        if (ui.value.query.isBlank()) {
+            loadRecentHistory()
+            _ui.update { 
+                it.copy(showSearchHistory = true) 
+            }
+        }
     }
 
     fun searchFirstPage(limit: Int = PaginationConstants.DEFAULT_PAGE_SIZE) = viewModelScope.launch {
@@ -114,7 +176,10 @@ class ProductSearchViewModel @Inject constructor(
         }
 
         when (val res = searchProductsUseCase(query = q, offset = 0, limit = limit)) {
-            is AppResult.Success -> applyResult(firstPage = true, res = res.data)
+            is AppResult.Success -> {
+                saveSearchUseCase(q)
+                applyResult(firstPage = true, res = res.data)
+            }
             is AppResult.Error -> _ui.update { 
                 it.copy(
                     loading = false, 

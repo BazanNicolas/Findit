@@ -29,6 +29,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import com.products.app.R
 
 @Composable
@@ -36,12 +40,23 @@ fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     onSearchClick: () -> Unit,
+    onFocusChange: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
     placeholder: String = "",
     enabled: Boolean = true
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+    
+    LaunchedEffect(isFocused) {
+        if (isFocused && query.isBlank()) {
+            onFocusChange(true)
+        } else if (!isFocused && query.isBlank()) {
+            onFocusChange(false)
+        }
+    }
     
     Row(
         modifier = modifier,
@@ -82,6 +97,7 @@ fun SearchBar(
                     focusManager.clearFocus()
                 }
             ),
+            interactionSource = interactionSource,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.White.copy(alpha = 0.7f),
                 unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
