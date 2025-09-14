@@ -57,21 +57,14 @@ fun ProductSearchScreen(
                         onRetry = { vm.searchFirstPage() }
                     )
                 }
-                state.products.isEmpty() && state.query.isBlank() -> {
-                    EmptyState(
-                        icon = "🔍",
-                        title = "Search Products",
-                        subtitle = "Use the search bar to find products"
-                    )
-                }
-                state.products.isEmpty() && state.query.isNotBlank() && !state.loading -> {
+                state.products.isEmpty() && !state.isInitialLoad -> {
                     EmptyState(
                         icon = "😔",
                         title = "No Products Found",
                         subtitle = "Try different search terms"
                     )
                 }
-                else -> {
+                state.products.isNotEmpty() -> {
                     val gridState = remember { LazyStaggeredGridState() }
                     
                     InfiniteScrollHandler(
@@ -113,6 +106,13 @@ fun ProductSearchScreen(
                             }
                         }
                     }
+                }
+                else -> {
+                    EmptyState(
+                        icon = "🔍",
+                        title = "Search Products",
+                        subtitle = "Use the search bar to find products"
+                    )
                 }
             }
         }
