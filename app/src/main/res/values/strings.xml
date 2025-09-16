@@ -1,10 +1,11 @@
 <resources>
-    <string name="app_name">Products</string>
+    <string name="app_name">Findit</string>
     
     <!-- Search -->
     <string name="search_placeholder">Search products...</string>
     <string name="search_clear">Clear search</string>
     <string name="search_button">Search</string>
+    <string name="close">Close</string>
     <string name="search_products">Search Products</string>
     <string name="search_products_subtitle">Use the search bar to find products</string>
     <string name="loading_suggestions">Loading suggestions...</string>
@@ -49,6 +50,14 @@
     <string name="time_now">now</string>
     <string name="time_minutes">m</string>
     <string name="time_hours">h</string>
+    
+    <!-- Home Screen -->
+    <string name="welcome_title">Welcome to Findit</string>
+    <string name="welcome_subtitle">Discover amazing products with our smart search</string>
+    <string name="because_you_searched">Because you searched</string>
+    <string name="recently_viewed">Recently Viewed</string>
+    <string name="start_searching">Start Searching</string>
+    <string name="start_searching_subtitle">Use the search bar above to find products you love</string>
     
     <!-- Icons -->
     <string name="icon_search">🔍</string>

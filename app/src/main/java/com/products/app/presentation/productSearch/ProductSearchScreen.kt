@@ -8,6 +8,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,31 +27,40 @@ import com.products.app.presentation.common.components.PaginationErrorIndicator
 import com.products.app.presentation.productSearch.components.ProductCard
 import com.products.app.presentation.productSearch.components.InfiniteScrollHandler
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductSearchScreen(
+    initialQuery: String = "",
     onProductClick: (com.products.app.domain.model.Product) -> Unit = {},
+    onBackClick: () -> Unit = {},
     vm: ProductSearchViewModel = hiltViewModel()
 ) {
     val state by vm.ui.collectAsState()
+    
+    LaunchedEffect(initialQuery) {
+        if (initialQuery.isNotBlank()) {
+            vm.onQueryChange(initialQuery)
+            vm.searchFirstPage()
+        }
+    }
 
     Scaffold(
         topBar = {
-            AppBar(
-                title = stringResource(R.string.products_title),
-                searchQuery = state.query,
-                onSearchQueryChange = vm::onQueryChange,
-                onSearchClick = { vm.searchFirstPage() },
-                showSearch = true,
-                suggestions = state.suggestions,
-                showSuggestions = state.showSuggestions,
-                loadingSuggestions = state.loadingSuggestions,
-                searchHistory = state.searchHistory,
-                showSearchHistory = state.showSearchHistory,
-                onSuggestionClick = vm::onSuggestionClick,
-                onHistoryClick = vm::onHistoryClick,
-                onClearHistory = vm::clearSearchHistory,
-                onHideSuggestions = vm::hideSuggestions,
-                onShowSearchHistory = vm::showSearchHistory
+            TopAppBar(
+                title = { Text(stringResource(R.string.products_title)) },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                )
             )
         }
     ) { paddingValues ->

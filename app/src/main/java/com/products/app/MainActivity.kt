@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.products.app.presentation.home.HomeScreen
 import com.products.app.presentation.productDetail.ProductDetailScreen
 import com.products.app.presentation.productSearch.ProductSearchScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,12 +26,28 @@ class MainActivity : ComponentActivity() {
                 
                 NavHost(
                     navController = navController,
-                    startDestination = "product_search"
+                    startDestination = "home"
                 ) {
-                    composable("product_search") {
+                    composable("home") {
+                        HomeScreen(
+                            onSearchClick = { query ->
+                                navController.navigate("product_search/$query")
+                            },
+                            onProductClick = { productId ->
+                                navController.navigate("product_detail/$productId")
+                            }
+                        )
+                    }
+                    
+                    composable("product_search/{query}") { backStackEntry ->
+                        val query = backStackEntry.arguments?.getString("query") ?: ""
                         ProductSearchScreen(
+                            initialQuery = query,
                             onProductClick = { product ->
                                 navController.navigate("product_detail/${product.id}")
+                            },
+                            onBackClick = {
+                                navController.popBackStack()
                             }
                         )
                     }

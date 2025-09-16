@@ -2,6 +2,7 @@ package com.products.app.di
 
 import android.content.Context
 import com.products.app.data.local.dao.SearchHistoryDao
+import com.products.app.data.local.dao.ViewedProductDao
 import com.products.app.data.local.database.ProductsDatabase
 import dagger.Module
 import dagger.Provides
@@ -23,5 +24,10 @@ object DatabaseModule {
     @Provides
     fun provideSearchHistoryDao(database: ProductsDatabase): SearchHistoryDao {
         return database.searchHistoryDao()
+    }
+    
+    @Provides
+    fun provideViewedProductDao(database: ProductsDatabase): ViewedProductDao {
+        return database.viewedProductDao()
     }
 }
