@@ -222,6 +222,10 @@ class ProductSearchViewModel @Inject constructor(
             val newList = if (firstPage) res.products else it.products + res.products
             val hasReachedEnd = res.products.isEmpty()
             
+            // Debug logging - temporary
+            res.products.forEachIndexed { index, product ->
+            }
+            
             it.copy(
                 loading = false,
                 loadingMore = false,

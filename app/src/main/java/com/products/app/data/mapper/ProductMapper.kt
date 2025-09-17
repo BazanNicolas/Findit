@@ -9,7 +9,9 @@ fun ProductDto.toDomain(): Product {
         "inactive" -> ProductStatus.INACTIVE
         else -> ProductStatus.UNKNOWN
     }
-    val pics = (pictures ?: emptyList()).mapNotNull { it.url }
+    val pics = (pictures ?: emptyList()).mapNotNull { picture -> 
+        picture.url?.takeIf { it.isNotBlank() }
+    }
     val buyBoxInfo = buy_box_winner?.let {
         val price = it.price
         val currency = it.currency_id

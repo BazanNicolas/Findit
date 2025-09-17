@@ -17,7 +17,13 @@ class ProductsRepositoryImpl @Inject constructor(
             offset: Int,
             limit: Int
         ): AppResult<ProductSearchResult> = try {
-            val dto = api.searchProducts(query = query, offset = offset, limit = limit)
+            val dto = api.searchProducts(
+                query = query,
+                siteId = "MLA",
+                status = "active",
+                offset = offset,
+                limit = limit
+            )
             AppResult.Success(dto.toDomain())
         } catch (e: Exception) {
             AppResult.Error(e.message ?: "Unknown error")

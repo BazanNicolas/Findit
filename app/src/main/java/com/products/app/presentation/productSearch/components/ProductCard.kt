@@ -41,9 +41,14 @@ fun ProductCard(
     onProductClick: (Product) -> Unit = {}
 ) {
     val context = LocalContext.current
-    val imageRequest: ImageRequest = remember(product.thumbnailUrl) {
+    
+    // Use thumbnail or fallback to first picture URL
+    val imageUrl = product.thumbnailUrl?.takeIf { it.isNotBlank() } 
+        ?: product.pictureUrls.firstOrNull()
+    
+    val imageRequest: ImageRequest = remember(imageUrl) {
         ImageRequest.Builder(context)
-            .data(product.thumbnailUrl)
+            .data(imageUrl)
             .build()
     }
     

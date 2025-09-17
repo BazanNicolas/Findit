@@ -89,6 +89,7 @@ fun ProductSearchScreen(
                     )
                 }
                 state.products.isEmpty() && state.query.isNotBlank() && !state.loading -> {
+                    // Debug logging - temporary
                     EmptyState(
                         icon = stringResource(R.string.icon_sad),
                         title = stringResource(R.string.no_products_found),

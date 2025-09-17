@@ -7,8 +7,9 @@ class SaveSearchUseCase @Inject constructor(
     private val searchHistoryRepository: SearchHistoryRepository
 ) {
     suspend operator fun invoke(query: String) {
-        if (query.isNotBlank()) {
-            searchHistoryRepository.saveSearch(query)
+        val trimmedQuery = query.trim()
+        if (trimmedQuery.isNotBlank()) {
+            searchHistoryRepository.saveSearch(trimmedQuery)
         }
     }
 }

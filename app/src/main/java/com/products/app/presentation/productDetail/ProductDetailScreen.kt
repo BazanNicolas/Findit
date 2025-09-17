@@ -169,7 +169,7 @@ private fun ProductImageGallery(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            // HorizontalPager para deslizar imágenes
+            // Horizontal pager for image sliding
             val pagerState = rememberPagerState(pageCount = { images.size })
             
             Box(
@@ -196,7 +196,7 @@ private fun ProductImageGallery(
                     )
                 }
                 
-                // Indicador de imagen actual si hay múltiples
+                // Current image indicator if multiple images
                 if (images.size > 1) {
                     Row(
                         modifier = Modifier
