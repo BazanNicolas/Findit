@@ -144,3 +144,5 @@ class SaveSearchUseCaseTest {
         verify(repository).saveSearch(query2)
     }
 }
+
+

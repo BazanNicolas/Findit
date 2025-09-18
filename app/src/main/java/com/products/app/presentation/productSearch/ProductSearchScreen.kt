@@ -68,7 +68,7 @@ fun ProductSearchScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 0.dp)
         ) {
             when {
                 state.loading -> {
@@ -108,8 +108,8 @@ fun ProductSearchScreen(
                     LazyVerticalStaggeredGrid(
                         state = gridState,
                         columns = StaggeredGridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalItemSpacing = 12.dp,
+                        horizontalArrangement = Arrangement.spacedBy(0.dp),
+                        verticalItemSpacing = 0.dp,
                         contentPadding = PaddingValues(vertical = 16.dp)
                     ) {
                         items(state.products) { product ->

@@ -309,7 +309,7 @@ private fun RecentSearchesSection(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = stringResource(R.string.because_you_searched),
+                    text = stringResource(R.string.recent_searches),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface

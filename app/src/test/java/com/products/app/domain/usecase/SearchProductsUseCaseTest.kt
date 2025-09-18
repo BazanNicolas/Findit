@@ -155,3 +155,5 @@ class SearchProductsUseCaseTest {
         verify(repository).search(query, 0, 10)
     }
 }
+
+

@@ -54,7 +54,6 @@
     <!-- Home Screen -->
     <string name="welcome_title">Welcome to Findit</string>
     <string name="welcome_subtitle">Discover amazing products with our smart search</string>
-    <string name="because_you_searched">Because you searched</string>
     <string name="recently_viewed">Recently Viewed</string>
     <string name="start_searching">Start Searching</string>
     <string name="start_searching_subtitle">Use the search bar above to find products you love</string>
