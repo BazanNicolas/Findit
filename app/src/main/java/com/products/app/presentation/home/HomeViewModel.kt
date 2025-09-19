@@ -43,10 +43,10 @@ class HomeViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(searchQuery = query)
         
         if (query.isBlank()) {
-            // Solo cargar historial si no hay texto
+            // Load history only when no text is entered
             loadRecentHistory()
         } else {
-            // Cargar sugerencias e historial solo si hay texto
+            // Load suggestions and history only when text is entered
             loadMatchingHistory(query)
             loadSuggestions(query)
         }

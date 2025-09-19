@@ -6,15 +6,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +32,8 @@ fun AutosuggestDropdown(
     searchHistory: List<SearchHistory>,
     onSuggestionClick: (String) -> Unit,
     onHistoryClick: (String) -> Unit,
+    onSuggestionComplete: (String) -> Unit,
+    onHistoryComplete: (String) -> Unit,
     onClearHistory: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -73,7 +74,8 @@ fun AutosuggestDropdown(
                         items(searchHistory) { history ->
                             SearchHistoryItem(
                                 history = history,
-                                onClick = { onHistoryClick(history.query) }
+                                onClick = { onHistoryClick(history.query) },
+                                onComplete = { onHistoryComplete(history.query) }
                             )
                         }
                     }
@@ -82,7 +84,8 @@ fun AutosuggestDropdown(
                         items(suggestions) { suggestion ->
                             AutosuggestItem(
                                 suggestion = suggestion,
-                                onClick = { onSuggestionClick(suggestion.query) }
+                                onClick = { onSuggestionClick(suggestion.query) },
+                                onComplete = { onSuggestionComplete(suggestion.query) }
                             )
                         }
                     }
@@ -96,6 +99,7 @@ fun AutosuggestDropdown(
 private fun SearchHistoryItem(
     history: SearchHistory,
     onClick: () -> Unit,
+    onComplete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -106,7 +110,7 @@ private fun SearchHistoryItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            imageVector = Icons.Default.Refresh,
+            painter = painterResource(R.drawable.ic_schedule_24),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(20.dp)
@@ -123,6 +127,20 @@ private fun SearchHistoryItem(
             modifier = Modifier.weight(1f)
         )
         
+        Spacer(modifier = Modifier.width(8.dp))
+        
+        IconButton(
+            onClick = onComplete,
+            modifier = Modifier.size(32.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.arrow_insert_24),
+                contentDescription = stringResource(R.string.complete_text),
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp)
+            )
+        }
+        
     }
 }
 
@@ -131,6 +149,7 @@ private fun SearchHistoryItem(
 private fun AutosuggestItem(
     suggestion: SearchSuggestion,
     onClick: () -> Unit,
+    onComplete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -167,16 +186,31 @@ private fun AutosuggestItem(
         Text(
             text = annotatedText,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(1f)
         )
         
         if (suggestion.isVerifiedStore) {
-            Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = stringResource(R.string.icon_check),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+        }
+        
+        Spacer(modifier = Modifier.width(8.dp))
+        
+        IconButton(
+            onClick = onComplete,
+            modifier = Modifier.size(32.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.arrow_insert_24),
+                contentDescription = stringResource(R.string.complete_text),
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp)
             )
         }
     }

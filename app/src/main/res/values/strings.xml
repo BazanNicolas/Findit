@@ -63,4 +63,6 @@
     <string name="icon_sad">😔</string>
     <string name="icon_warning">⚠️</string>
     <string name="icon_check">✓</string>
+    <string name="complete_text">Complete text</string>
+    <string name="what_are_you_looking_for">What are you looking for?</string>
 </resources>

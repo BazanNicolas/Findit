@@ -17,10 +17,15 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -50,7 +55,7 @@ fun ProductDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.product_details)) },
+                title = { },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -102,7 +107,8 @@ private fun ProductDetailContent(
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 16.dp)
+        contentPadding = PaddingValues(bottom = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item {
             ProductImageGallery(
@@ -175,8 +181,7 @@ private fun ProductImageGallery(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(400.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .height(250.dp)
             ) {
                 HorizontalPager(
                     state = pagerState,
@@ -188,46 +193,58 @@ private fun ProductImageGallery(
                             .build()
                     }
                     
-                    AsyncImage(
-                        model = imageRequest,
-                        contentDescription = stringResource(R.string.product_image),
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Fit
-                    )
-                }
-                
-                // Current image indicator if multiple images
-                if (images.size > 1) {
-                    Row(
+                    // White background to match image content
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            .fillMaxSize()
+                            .background(Color.White)
                     ) {
-                        repeat(images.size) { index ->
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .background(
-                                        color = if (index == pagerState.currentPage) {
-                                            MaterialTheme.colorScheme.primary
-                                        } else {
-                                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
-                                        },
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
-                            )
+                        AsyncImage(
+                            model = imageRequest,
+                            contentDescription = stringResource(R.string.product_image),
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                }
+            }
+            
+            // Current image indicator if multiple images - moved below the image
+            if (images.size > 1) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    repeat(images.size) { index ->
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .background(
+                                    color = if (index == pagerState.currentPage) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                                    },
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                        )
+                        
+                        if (index < images.size - 1) {
+                            Spacer(modifier = Modifier.width(4.dp))
                         }
                     }
                 }
             }
             
-            // Miniaturas deslizables
+            // Scrollable thumbnails
             if (images.size > 1) {
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(images.size) { index ->
@@ -237,22 +254,35 @@ private fun ProductImageGallery(
                                 .build()
                         }
                         
+                        val thumbnailInteractionSource = remember { MutableInteractionSource() }
+                        val isThumbnailPressed by thumbnailInteractionSource.collectIsPressedAsState()
+                        
+                        val thumbnailScale by animateFloatAsState(
+                            targetValue = if (isThumbnailPressed) 0.95f else 1f,
+                            animationSpec = tween(150),
+                            label = "thumbnailScale"
+                        )
+                        
                         AsyncImage(
                             model = imageRequest,
                             contentDescription = stringResource(R.string.product_image),
                             modifier = Modifier
-                                .size(60.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable { 
+                                .size(48.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .clickable(
+                                    interactionSource = thumbnailInteractionSource,
+                                    indication = null
+                                ) { 
                                     // Scroll to the selected page
                                     coroutineScope.launch {
                                         pagerState.animateScrollToPage(index)
                                     }
                                 }
+                                .scale(thumbnailScale)
                                 .border(
-                                    width = if (index == pagerState.currentPage) 2.dp else 0.dp,
+                                    width = if (index == pagerState.currentPage) 1.dp else 0.dp,
                                     color = MaterialTheme.colorScheme.primary,
-                                    shape = RoundedCornerShape(8.dp)
+                                    shape = RoundedCornerShape(4.dp)
                                 ),
                             contentScale = ContentScale.Crop
                         )
@@ -272,23 +302,24 @@ private fun ProductHeader(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
             text = name,
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-            lineHeight = MaterialTheme.typography.headlineMedium.lineHeight * 1.1
+            color = MaterialTheme.colorScheme.onSurface
         )
         
         familyName?.let { family ->
-            Text(
-                text = family,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            if (family != name) {
+                Text(
+                    text = family,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
@@ -300,14 +331,14 @@ private fun ProductMainFeatures(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
         Text(
             text = stringResource(R.string.main_features),
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(bottom = 12.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         
         Column(
@@ -331,7 +362,7 @@ private fun ProductMainFeatures(
                     
                     Text(
                         text = feature.text,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f)
                     )
@@ -348,14 +379,14 @@ private fun ProductAttributesSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
         Text(
             text = stringResource(R.string.attributes),
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         
         Column(
@@ -364,8 +395,12 @@ private fun ProductAttributesSection(
             attributes.forEach { attribute ->
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                    shape = RoundedCornerShape(4.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                    border = BorderStroke(
+                        width = 0.4.dp,
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                    )
                 ) {
                     Row(
                         modifier = Modifier
@@ -376,7 +411,7 @@ private fun ProductAttributesSection(
                     ) {
                         Text(
                             text = attribute.name,
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.weight(1f)
@@ -384,7 +419,7 @@ private fun ProductAttributesSection(
                         
                         Text(
                             text = attribute.valueName ?: stringResource(R.string.not_specified),
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.SemiBold,
                             textAlign = TextAlign.End,
@@ -404,19 +439,19 @@ private fun ProductDescriptionSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
         Text(
             text = stringResource(R.string.description),
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(bottom = 12.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         
         Text(
             text = description,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.4
         )
@@ -427,30 +462,41 @@ private fun ProductDescriptionSection(
 private fun ProductVariantsSection(
     pickers: List<com.products.app.domain.model.ProductPicker>
 ) {
+    // Local state for variant selections
+    // Initialize with autoCompleted values from API, or first product if no autoCompleted
+    var selectedVariants by remember { 
+        mutableStateOf(
+            pickers.associate { picker ->
+                val autoCompletedProduct = picker.products?.find { it.autoCompleted == true }
+                val defaultProduct = autoCompletedProduct ?: picker.products?.firstOrNull()
+                picker.pickerName to (defaultProduct?.pickerLabel ?: "")
+            }.filterValues { it.isNotEmpty() }
+        )
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
         Text(
             text = stringResource(R.string.variants),
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             pickers.forEach { picker ->
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
                         text = picker.pickerName,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     
@@ -459,24 +505,45 @@ private fun ProductVariantsSection(
                     ) {
                         picker.products?.forEach { product ->
                             item {
+                                val interactionSource = remember { MutableInteractionSource() }
+                                val isPressed by interactionSource.collectIsPressedAsState()
+                                
+                                val scale by animateFloatAsState(
+                                    targetValue = if (isPressed) 0.95f else 1f,
+                                    animationSpec = tween(150),
+                                    label = "chipScale"
+                                )
+                                
+                                val isSelected = selectedVariants[picker.pickerName] == product.pickerLabel
+                                
                                 Surface(
-                                    modifier = Modifier.clickable { },
-                                    shape = RoundedCornerShape(12.dp),
-                                    color = if (product.tags?.contains("selected") == true) {
+                                    modifier = Modifier
+                                        .clickable(
+                                            interactionSource = interactionSource,
+                                            indication = null
+                                        ) { 
+                                            // Update local selection
+                                            selectedVariants = selectedVariants.toMutableMap().apply {
+                                                put(picker.pickerName, product.pickerLabel)
+                                            }
+                                        }
+                                        .scale(scale),
+                                    shape = RoundedCornerShape(6.dp),
+                                    color = if (isSelected) {
                                         MaterialTheme.colorScheme.primary
                                     } else {
                                         MaterialTheme.colorScheme.surfaceVariant
                                     },
-                                    border = if (product.tags?.contains("selected") == true) {
-                                        BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+                                    border = if (isSelected) {
+                                        BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                                     } else {
-                                        null
+                                        BorderStroke(0.4.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
                                     }
                                 ) {
                                     Text(
                                         text = product.pickerLabel,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = if (product.tags?.contains("selected") == true) {
+                                        color = if (isSelected) {
                                             MaterialTheme.colorScheme.onPrimary
                                         } else {
                                             MaterialTheme.colorScheme.onSurfaceVariant

@@ -2,11 +2,14 @@ package com.products.app.presentation.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -18,18 +21,23 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.offset
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.products.app.R
 import com.products.app.presentation.common.components.AutosuggestDropdown
+import com.products.app.presentation.common.components.ViewedProductCard
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -107,7 +115,7 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .clickable { viewModel.hideSuggestions() } // Click outside to close
+                        .clickable { viewModel.hideSuggestions() } // Close dropdown when clicking outside
                 ) {
                     AutosuggestDropdown(
                         suggestions = uiState.suggestions,
@@ -131,12 +139,26 @@ fun HomeScreen(
                                 viewModel.hideSuggestions()
                             }
                         },
+                        onSuggestionComplete = { query ->
+                            val suggestion = uiState.suggestions.find { it.query == query }
+                            suggestion?.let { 
+                                viewModel.onSuggestionClick(it)
+                                viewModel.hideSuggestions()
+                            }
+                        },
+                        onHistoryComplete = { query ->
+                            val history = uiState.searchHistory.find { it.query == query }
+                            history?.let { 
+                                viewModel.onHistoryClick(it)
+                                viewModel.hideSuggestions()
+                            }
+                        },
                         onClearHistory = { },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp)
-                            .offset(y = 120.dp) // Closer to search field
-                            .clickable { } // Prevent click propagation
+                            .offset(y = 120.dp) // Position closer to search field
+                            .clickable { } // Prevent click propagation to background
                     )
                 }
             }
@@ -190,8 +212,8 @@ private fun SearchSection(
         // Search container with elevation
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            shape = RoundedCornerShape(8.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             )
@@ -200,7 +222,7 @@ private fun SearchSection(
                 modifier = Modifier.padding(20.dp)
             ) {
                 Text(
-                    text = "What are you looking for?",
+                    text = stringResource(R.string.what_are_you_looking_for),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -239,7 +261,7 @@ private fun SearchSection(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(6.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
@@ -264,7 +286,7 @@ private fun ContentSections(
     onProductClick: (String) -> Unit
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         if (recentSearches.isNotEmpty()) {
             RecentSearchesSection(
@@ -289,8 +311,8 @@ private fun RecentSearchesSection(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
@@ -302,9 +324,9 @@ private fun RecentSearchesSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Default.Refresh,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(R.drawable.ic_schedule_24),
+                    contentDescription = stringResource(R.string.recent_searches),
+                    modifier = Modifier.size(24.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -323,9 +345,24 @@ private fun RecentSearchesSection(
                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
             ) {
                 items(recentSearches) { search ->
+                    val chipInteractionSource = remember { MutableInteractionSource() }
+                    val isChipPressed by chipInteractionSource.collectIsPressedAsState()
+                    
+                    val chipScale by animateFloatAsState(
+                        targetValue = if (isChipPressed) 0.95f else 1f,
+                        animationSpec = tween(150),
+                        label = "chipScale"
+                    )
+                    
                     Surface(
-                        modifier = Modifier.clickable { onSearchClick(search.query) },
-                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier
+                            .clickable(
+                                interactionSource = chipInteractionSource,
+                                indication = null
+                            ) { onSearchClick(search.query) }
+                            .scale(chipScale)
+                            .padding(4.dp),
+                        shape = RoundedCornerShape(8.dp),
                         color = MaterialTheme.colorScheme.primaryContainer
                     ) {
                         Text(
@@ -348,8 +385,8 @@ private fun RecentViewedProductsSection(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
@@ -362,8 +399,8 @@ private fun RecentViewedProductsSection(
             ) {
                 Icon(
                     imageVector = Icons.Default.Star,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
+                    contentDescription = stringResource(R.string.recently_viewed),
+                    modifier = Modifier.size(24.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -383,6 +420,7 @@ private fun RecentViewedProductsSection(
             ) {
                 items(recentViewedProducts) { product ->
                     ViewedProductCard(
+                        modifier = Modifier.width(140.dp),
                         product = product,
                         onProductClick = onProductClick
                     )
@@ -392,47 +430,5 @@ private fun RecentViewedProductsSection(
     }
 }
 
-@Composable
-private fun ViewedProductCard(
-    product: com.products.app.domain.model.ViewedProduct,
-    onProductClick: (String) -> Unit
-) {
-    val context = LocalContext.current
-    
-    Card(
-        modifier = Modifier
-            .width(140.dp)
-            .clickable { onProductClick(product.productId) },
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
-    ) {
-        Column {
-            AsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data(product.thumbnailUrl)
-                    .build(),
-                contentDescription = stringResource(R.string.product_image),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)),
-                contentScale = ContentScale.Crop
-            )
-            
-            Text(
-                text = product.productName,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(12.dp),
-                maxLines = 2,
-                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                fontWeight = FontWeight.Medium
-            )
-        }
-    }
-}
 
 

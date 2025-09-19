@@ -33,6 +33,8 @@ fun AppBar(
     showSearchHistory: Boolean = false,
     onSuggestionClick: (String) -> Unit = {},
     onHistoryClick: (String) -> Unit = {},
+    onSuggestionComplete: (String) -> Unit = {},
+    onHistoryComplete: (String) -> Unit = {},
     onClearHistory: () -> Unit = {},
     onHideSuggestions: () -> Unit = {},
     onShowSearchHistory: () -> Unit = {}
@@ -82,6 +84,14 @@ fun AppBar(
                 },
                 onHistoryClick = { query ->
                     onHistoryClick(query)
+                    focusManager.clearFocus()
+                },
+                onSuggestionComplete = { query ->
+                    onSuggestionComplete(query)
+                    focusManager.clearFocus()
+                },
+                onHistoryComplete = { query ->
+                    onHistoryComplete(query)
                     focusManager.clearFocus()
                 },
                 onClearHistory = onClearHistory,

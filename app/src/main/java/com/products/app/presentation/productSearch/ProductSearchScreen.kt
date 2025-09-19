@@ -18,13 +18,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import com.products.app.R
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.products.app.presentation.common.components.AppBar
 import com.products.app.presentation.common.components.EmptyState
 import com.products.app.presentation.common.components.ErrorState
 import com.products.app.presentation.common.components.LoadingState
 import com.products.app.presentation.common.components.PaginationLoadingIndicator
 import com.products.app.presentation.common.components.PaginationErrorIndicator
-import com.products.app.presentation.productSearch.components.ProductCard
+import com.products.app.presentation.common.components.ProductCard
 import com.products.app.presentation.productSearch.components.InfiniteScrollHandler
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +46,7 @@ fun ProductSearchScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.products_title)) },
+                title = { },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -108,16 +107,15 @@ fun ProductSearchScreen(
                     LazyVerticalStaggeredGrid(
                         state = gridState,
                         columns = StaggeredGridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(0.dp),
-                        verticalItemSpacing = 0.dp,
-                        contentPadding = PaddingValues(vertical = 16.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalItemSpacing = 8.dp,
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp)
                     ) {
                         items(state.products) { product ->
                             ProductCard(
                                 product = product,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { onProductClick(product) }
+                                onProductClick = onProductClick,
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                         

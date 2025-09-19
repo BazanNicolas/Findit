@@ -32,7 +32,7 @@ class ProductDetailViewModel @Inject constructor(
                         error = null
                     )
                     
-                    // Guardar producto visto
+                    // Save viewed product
                     val product = com.products.app.domain.model.Product(
                         id = productDetail.id,
                         name = productDetail.name,
