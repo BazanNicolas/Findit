@@ -30,7 +30,7 @@ abstract class ProductsDatabase : RoomDatabase() {
                     ProductsDatabase::class.java,
                     "products_database"
                 )
-                .fallbackToDestructiveMigration()
+                    .fallbackToDestructiveMigration(false)
                 .build()
                 INSTANCE = instance
                 instance

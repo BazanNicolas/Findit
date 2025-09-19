@@ -1,5 +1,7 @@
 package com.products.app.presentation.common.components
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -19,6 +21,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,22 +29,18 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.res.stringResource
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import com.products.app.R
 
 @Composable
 fun SearchBar(
+    modifier: Modifier = Modifier,
     query: String,
     onQueryChange: (String) -> Unit,
     onSearchClick: () -> Unit,
     onFocusChange: (Boolean) -> Unit = {},
-    modifier: Modifier = Modifier,
     placeholder: String = "",
     enabled: Boolean = true
 ) {
@@ -68,7 +67,7 @@ fun SearchBar(
             onValueChange = onQueryChange,
             placeholder = {
                 Text(
-                    text = if (placeholder.isEmpty()) stringResource(R.string.search_placeholder) else placeholder,
+                    text = placeholder.ifEmpty { stringResource(R.string.search_placeholder) },
                     color = Color.White.copy(alpha = 0.7f),
                     style = MaterialTheme.typography.bodySmall
                 )

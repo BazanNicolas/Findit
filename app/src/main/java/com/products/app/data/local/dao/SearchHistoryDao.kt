@@ -10,7 +10,7 @@ interface SearchHistoryDao {
     @Query("SELECT * FROM search_history ORDER BY timestamp DESC LIMIT :limit")
     fun getRecentSearches(limit: Int = 10): Flow<List<SearchHistoryEntity>>
     
-    @Query("SELECT * FROM search_history WHERE query LIKE '%' || :query || '%' ORDER BY timestamp DESC LIMIT :limit")
+    @Query("SELECT * FROM search_history WHERE `query` LIKE '%' || :query || '%' ORDER BY timestamp DESC LIMIT :limit")
     fun getMatchingSearches(query: String, limit: Int = 10): Flow<List<SearchHistoryEntity>>
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)

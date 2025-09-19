@@ -1,21 +1,23 @@
 package com.products.app.di
 
-import android.content.Context
+import com.products.app.core.NetworkErrorHandler
 import com.products.app.data.remote.AuthInterceptor
+import com.products.app.data.remote.AutosuggestApi
 import com.products.app.data.remote.ProductsApi
+import com.products.app.data.repository.AutosuggestRepositoryImpl
 import com.products.app.data.repository.ProductsRepositoryImpl
+import com.products.app.domain.repository.AutosuggestRepository
 import com.products.app.domain.repository.ProductsRepository
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -70,7 +72,15 @@ object NetworkModule {
     fun provideApi(retrofit: Retrofit): ProductsApi =
         retrofit.create(ProductsApi::class.java)
 
+    @Provides @Singleton @Named("autosuggest")
+    fun provideAutosuggestApi(@Named("autosuggest") retrofit: Retrofit): AutosuggestApi =
+        retrofit.create(AutosuggestApi::class.java)
+
     @Provides @Singleton
-    fun provideRepo(api: ProductsApi): ProductsRepository =
-        ProductsRepositoryImpl(api)
+    fun provideRepo(api: ProductsApi, errorHandler: NetworkErrorHandler): ProductsRepository =
+        ProductsRepositoryImpl(api, errorHandler)
+
+    @Provides @Singleton
+    fun provideAutosuggestRepo(@Named("autosuggest") retrofit: Retrofit, errorHandler: NetworkErrorHandler): AutosuggestRepository =
+        AutosuggestRepositoryImpl(retrofit, errorHandler)
 }

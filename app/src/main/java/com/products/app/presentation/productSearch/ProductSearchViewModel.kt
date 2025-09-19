@@ -5,16 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.products.app.core.AppResult
 import com.products.app.core.PaginationConstants
 import com.products.app.domain.model.ProductSearchResult
-import com.products.app.domain.usecase.SearchProductsUseCase
 import com.products.app.domain.usecase.LoadMoreProductsUseCase
 import com.products.app.domain.usecase.SaveSearchUseCase
-import com.products.app.presentation.productSearch.ProductSearchUiState
+import com.products.app.domain.usecase.SearchProductsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class ProductSearchViewModel @Inject constructor(
@@ -67,8 +66,8 @@ class ProductSearchViewModel @Inject constructor(
         val paging = current.paging ?: return@launch
 
         if (current.loadingMore || current.hasReachedEnd || q.isEmpty()) return@launch
-        
-        val nextOffset = paging.offset + paging.limit
+
+        paging.offset + paging.limit
 
         _ui.update { 
             it.copy(

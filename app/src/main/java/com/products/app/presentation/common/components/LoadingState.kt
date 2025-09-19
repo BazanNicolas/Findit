@@ -11,8 +11,8 @@ import com.products.app.R
 
 @Composable
 fun LoadingState(
-    message: String = "",
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    message: String = ""
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
@@ -26,7 +26,7 @@ fun LoadingState(
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = if (message.isEmpty()) stringResource(R.string.loading) else message,
+                text = message.ifEmpty { stringResource(R.string.loading) },
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

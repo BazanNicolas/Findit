@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
                             onBackClick = {
                                 navController.popBackStack()
                             },
-                            viewModel = androidx.hilt.navigation.compose.hiltViewModel()
+                            viewModel = androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel()
                         )
                     }
                 }

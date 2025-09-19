@@ -5,40 +5,29 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.offset
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
 import com.products.app.R
 import com.products.app.presentation.common.components.AutosuggestDropdown
 import com.products.app.presentation.common.components.ViewedProductCard
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,15 +76,9 @@ fun HomeScreen(
                         viewModel.onSearchClick()
                         onSearchClick(uiState.searchQuery)
                     },
-                    suggestions = uiState.suggestions,
                     showSuggestions = uiState.showSuggestions,
-                    loadingSuggestions = uiState.loadingSuggestions,
-                    searchHistory = uiState.searchHistory,
                     showSearchHistory = uiState.showSearchHistory,
-                    onSuggestionClick = viewModel::onSuggestionClick,
-                    onHistoryClick = viewModel::onHistoryClick,
-                    onHideSuggestions = viewModel::hideSuggestions,
-                    onShowSearchHistory = viewModel::showSearchHistory
+                    onHideSuggestions = viewModel::hideSuggestions
                 )
                 
                 if (uiState.recentSearches.isNotEmpty() || uiState.recentViewedProducts.isNotEmpty()) {
@@ -153,7 +136,6 @@ fun HomeScreen(
                                 viewModel.hideSuggestions()
                             }
                         },
-                        onClearHistory = { },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp)
@@ -196,15 +178,9 @@ private fun SearchSection(
     searchQuery: String,
     onQueryChange: (String) -> Unit,
     onSearchClick: () -> Unit,
-    suggestions: List<com.products.app.domain.model.SearchSuggestion>,
     showSuggestions: Boolean,
-    loadingSuggestions: Boolean,
-    searchHistory: List<com.products.app.domain.model.SearchHistory>,
     showSearchHistory: Boolean,
-    onSuggestionClick: (com.products.app.domain.model.SearchSuggestion) -> Unit,
-    onHistoryClick: (com.products.app.domain.model.SearchHistory) -> Unit,
-    onHideSuggestions: () -> Unit,
-    onShowSearchHistory: () -> Unit
+    onHideSuggestions: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()

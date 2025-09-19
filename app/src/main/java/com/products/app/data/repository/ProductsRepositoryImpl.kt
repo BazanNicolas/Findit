@@ -1,6 +1,7 @@
 package com.products.app.data.repository
 
 import com.products.app.core.AppResult
+import com.products.app.core.NetworkErrorHandler
 import com.products.app.data.mapper.toDomain
 import com.products.app.data.remote.ProductsApi
 import com.products.app.domain.model.Paging
@@ -9,7 +10,8 @@ import com.products.app.domain.repository.ProductsRepository
 import jakarta.inject.Inject
 
 class ProductsRepositoryImpl @Inject constructor(
-    private val api: ProductsApi
+    private val api: ProductsApi,
+    private val errorHandler: NetworkErrorHandler
 ) : ProductsRepository {
 
         override suspend fun search(
@@ -26,6 +28,6 @@ class ProductsRepositoryImpl @Inject constructor(
             )
             AppResult.Success(dto.toDomain())
         } catch (e: Exception) {
-            AppResult.Error(e.message ?: "Unknown error")
+            AppResult.Error(errorHandler.handleError(e))
         }
 }

@@ -1,6 +1,5 @@
 package com.products.app.presentation.productSearch
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -12,12 +11,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import com.products.app.R
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.products.app.presentation.common.components.EmptyState
 import com.products.app.presentation.common.components.ErrorState
 import com.products.app.presentation.common.components.LoadingState
@@ -129,7 +127,6 @@ fun ProductSearchScreen(
                         if (paginationError != null) {
                             item(span = StaggeredGridItemSpan.FullLine) {
                                 PaginationErrorIndicator(
-                                    error = paginationError,
                                     onRetry = vm::retryPagination
                                 )
                             }

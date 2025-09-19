@@ -29,7 +29,6 @@ fun PaginationLoadingIndicator(
 
 @Composable
 fun PaginationErrorIndicator(
-    error: String,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {

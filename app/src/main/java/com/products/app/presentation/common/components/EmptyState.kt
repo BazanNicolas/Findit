@@ -12,10 +12,10 @@ import com.products.app.R
 
 @Composable
 fun EmptyState(
+    modifier: Modifier = Modifier,
     icon: String = "",
     title: String = "",
-    subtitle: String = "",
-    modifier: Modifier = Modifier
+    subtitle: String = ""
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
@@ -27,17 +27,17 @@ fun EmptyState(
             modifier = Modifier.padding(32.dp)
         ) {
             Text(
-                text = if (icon.isEmpty()) stringResource(R.string.icon_search) else icon,
+                text = icon.ifEmpty { stringResource(R.string.icon_search) },
                 style = MaterialTheme.typography.displayLarge
             )
             Text(
-                text = if (title.isEmpty()) stringResource(R.string.empty_title) else title,
+                text = title.ifEmpty { stringResource(R.string.empty_title) },
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
             Text(
-                text = if (subtitle.isEmpty()) stringResource(R.string.empty_subtitle) else subtitle,
+                text = subtitle.ifEmpty { stringResource(R.string.empty_subtitle) },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center

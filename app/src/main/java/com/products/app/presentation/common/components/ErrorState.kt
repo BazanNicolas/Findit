@@ -12,11 +12,11 @@ import com.products.app.R
 
 @Composable
 fun ErrorState(
+    modifier: Modifier = Modifier,
     icon: String = "",
     title: String = "",
     message: String = "",
-    onRetry: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    onRetry: (() -> Unit)? = null
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
@@ -28,17 +28,17 @@ fun ErrorState(
             modifier = Modifier.padding(32.dp)
         ) {
             Text(
-                text = if (icon.isEmpty()) stringResource(R.string.icon_warning) else icon,
+                text = icon.ifEmpty { stringResource(R.string.icon_warning) },
                 style = MaterialTheme.typography.displayLarge
             )
             Text(
-                text = if (title.isEmpty()) stringResource(R.string.error_title) else title,
+                text = title.ifEmpty { stringResource(R.string.error_title) },
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.error,
                 textAlign = TextAlign.Center
             )
             Text(
-                text = if (message.isEmpty()) stringResource(R.string.error_message) else message,
+                text = message.ifEmpty { stringResource(R.string.error_message) },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
