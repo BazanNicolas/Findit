@@ -61,6 +61,7 @@ import coil3.request.ImageRequest
 import com.products.app.R
 import com.products.app.presentation.common.components.ErrorState
 import com.products.app.presentation.common.components.LoadingState
+import com.products.app.presentation.common.components.AppLogo
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,6 +87,14 @@ fun ProductDetailScreen(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back)
                         )
+                    }
+                },
+                actions = {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AppLogo()
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

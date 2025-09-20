@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
@@ -22,6 +23,7 @@ import com.products.app.presentation.common.components.LoadingState
 import com.products.app.presentation.common.components.PaginationLoadingIndicator
 import com.products.app.presentation.common.components.PaginationErrorIndicator
 import com.products.app.presentation.common.components.ProductCard
+import com.products.app.presentation.common.components.AppLogo
 import com.products.app.presentation.productSearch.components.InfiniteScrollHandler
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,6 +53,14 @@ fun ProductSearchScreen(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back)
                         )
+                    }
+                },
+                actions = {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AppLogo()
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
