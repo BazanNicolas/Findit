@@ -7,7 +7,9 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -22,6 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.material.icons.filled.Delete
@@ -48,9 +52,25 @@ fun HomeScreen(
                 .background(
                     brush = androidx.compose.ui.graphics.Brush.verticalGradient(
                         colors = listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.08f),
                             MaterialTheme.colorScheme.surface
                         )
+                    )
+                )
+        )
+        
+        // Decorative elements
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = androidx.compose.ui.graphics.Brush.radialGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
+                            androidx.compose.ui.graphics.Color.Transparent
+                        ),
+                        radius = 400f
                     )
                 )
         )
@@ -86,6 +106,10 @@ fun HomeScreen(
                         onDeleteViewedProduct = { product -> viewModel.deleteViewedProduct(product) },
                         onClearAllViewedProducts = { viewModel.clearAllViewedProducts() }
                     )
+                } else {
+                    Spacer(modifier = Modifier.height(48.dp))
+                    
+                    EmptyStateDecoration()
                 }
             }
         }
@@ -99,7 +123,30 @@ private fun WelcomeHeader() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(R.string.welcome_title),
+            text = buildAnnotatedString {
+                val welcomeText = stringResource(R.string.welcome_title)
+                val finditIndex = welcomeText.indexOf("Findit")
+                
+                if (finditIndex != -1) {
+                    // Add text before "Findit"
+                    append(welcomeText.substring(0, finditIndex))
+                    
+                    // Add "Findit" with primary color
+                    withStyle(
+                        style = androidx.compose.ui.text.SpanStyle(
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("Findit")
+                    }
+                    
+                    // Add remaining text after "Findit"
+                    append(welcomeText.substring(finditIndex + 6))
+                } else {
+                    append(welcomeText)
+                }
+            },
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
@@ -110,7 +157,7 @@ private fun WelcomeHeader() {
         
         Text(
             text = stringResource(R.string.welcome_subtitle),
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
@@ -127,7 +174,7 @@ private fun SearchSection(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             )
@@ -152,7 +199,12 @@ private fun SearchSection(
                     OutlinedTextField(
                         value = "",
                         onValueChange = { },
-                        placeholder = { Text(stringResource(R.string.search_placeholder)) },
+                        placeholder = { 
+                            Text(
+                                text = stringResource(R.string.search_placeholder),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                            ) 
+                        },
                         trailingIcon = {
                             IconButton(
                                 onClick = onNavigateToSearch
@@ -166,16 +218,17 @@ private fun SearchSection(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
-                        shape = RoundedCornerShape(6.dp),
+                        shape = RoundedCornerShape(8.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                            disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                            disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
                             disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                            disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                         ),
-                        readOnly = true, // Make it read-only so it only triggers navigation
-                        enabled = false // Disable to prevent focus
+                        readOnly = true,
+                        enabled = false
                     )
                 }
             }
@@ -227,7 +280,7 @@ private fun RecentSearchesSection(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
@@ -273,56 +326,102 @@ private fun RecentSearchesSection(
             
             Spacer(modifier = Modifier.height(12.dp))
             
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+            Box(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                items(recentSearches) { search ->
-                    val chipInteractionSource = remember { MutableInteractionSource() }
-                    val isChipPressed by chipInteractionSource.collectIsPressedAsState()
-                    
-                    val chipScale by animateFloatAsState(
-                        targetValue = if (isChipPressed) 0.95f else 1f,
-                        animationSpec = tween(150),
-                        label = "chipScale"
-                    )
-                    
-                    Surface(
-                        modifier = Modifier
-                            .clickable(
-                                interactionSource = chipInteractionSource,
-                                indication = null
-                            ) { onSearchClick(search.query) }
-                            .scale(chipScale)
-                            .padding(4.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                val listState = rememberLazyListState()
+                val canScrollLeft = listState.canScrollBackward
+                val canScrollRight = listState.canScrollForward
+                
+                LazyRow(
+                    state = listState,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+                ) {
+                    items(recentSearches) { search ->
+                        val chipInteractionSource = remember { MutableInteractionSource() }
+                        val isChipPressed by chipInteractionSource.collectIsPressedAsState()
+                        
+                        val chipScale by animateFloatAsState(
+                            targetValue = if (isChipPressed) 0.95f else 1f,
+                            animationSpec = tween(150),
+                            label = "chipScale"
+                        )
+                        
+                        Surface(
+                            modifier = Modifier
+                                .clickable(
+                                    interactionSource = chipInteractionSource,
+                                    indication = null
+                                ) { onSearchClick(search.query) }
+                                .scale(chipScale)
+                                .padding(4.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shadowElevation = 2.dp
                         ) {
-                            Text(
-                                text = search.query,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            
-                            Spacer(modifier = Modifier.width(8.dp))
-                            
-                            IconButton(
-                                onClick = { onDeleteSearch(search) },
-                                modifier = Modifier.size(32.dp)
+                            Row(
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = stringResource(R.string.delete),
-                                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    modifier = Modifier.size(18.dp)
+                                Text(
+                                    text = search.query,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
+                                
+                                Spacer(modifier = Modifier.width(8.dp))
+                                
+                                IconButton(
+                                    onClick = { onDeleteSearch(search) },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = stringResource(R.string.delete),
+                                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
                             }
                         }
                     }
+                }
+                
+                // Left fade gradient - only show when can scroll left
+                if (canScrollLeft) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .width(16.dp)
+                            .height(56.dp) // Height of chips with padding
+                            .background(
+                                brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.surface,
+                                        androidx.compose.ui.graphics.Color.Transparent
+                                    )
+                                )
+                            )
+                    )
+                }
+                
+                // Right fade gradient - only show when can scroll right
+                if (canScrollRight) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .width(16.dp)
+                            .height(56.dp) // Height of chips with padding
+                            .background(
+                                brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
+                                    colors = listOf(
+                                        androidx.compose.ui.graphics.Color.Transparent,
+                                        MaterialTheme.colorScheme.surface
+                                    )
+                                )
+                            )
+                    )
                 }
             }
         }
@@ -339,7 +438,7 @@ private fun RecentViewedProductsSection(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
@@ -385,20 +484,113 @@ private fun RecentViewedProductsSection(
             
             Spacer(modifier = Modifier.height(12.dp))
             
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+            Box(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                items(recentViewedProducts) { product ->
-                    ViewedProductCard(
-                        modifier = Modifier.width(140.dp),
-                        product = product,
-                        onProductClick = onProductClick,
-                        onDeleteClick = onDeleteViewedProduct
+                val listState = rememberLazyListState()
+                val canScrollLeft = listState.canScrollBackward
+                val canScrollRight = listState.canScrollForward
+                
+                LazyRow(
+                    state = listState,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+                ) {
+                    items(recentViewedProducts) { product ->
+                        ViewedProductCard(
+                            modifier = Modifier.width(140.dp),
+                            product = product,
+                            onProductClick = onProductClick,
+                            onDeleteClick = onDeleteViewedProduct
+                        )
+                    }
+                }
+                
+                // Left fade gradient - only show when can scroll left
+                if (canScrollLeft) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .width(16.dp)
+                            .height(164.dp) // Height of product cards (120dp image + 44dp text/padding)
+                            .background(
+                                brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.surface,
+                                        androidx.compose.ui.graphics.Color.Transparent
+                                    )
+                                )
+                            )
+                    )
+                }
+                
+                // Right fade gradient - only show when can scroll right
+                if (canScrollRight) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .width(16.dp)
+                            .height(164.dp) // Height of product cards (120dp image + 44dp text/padding)
+                            .background(
+                                brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
+                                    colors = listOf(
+                                        androidx.compose.ui.graphics.Color.Transparent,
+                                        MaterialTheme.colorScheme.surface
+                                    )
+                                )
+                            )
                     )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun EmptyStateDecoration() {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Decorative circles
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                        shape = androidx.compose.foundation.shape.CircleShape
+                    )
+            )
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
+                        shape = androidx.compose.foundation.shape.CircleShape
+                    )
+            )
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.3f),
+                        shape = androidx.compose.foundation.shape.CircleShape
+                    )
+            )
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Text(
+            text = "¡Comienza a explorar!",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+            textAlign = TextAlign.Center
+        )
     }
 }
 

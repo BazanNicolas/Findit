@@ -87,7 +87,7 @@ fun ProductCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
             ) {
                 AsyncImage(
                     model = imageRequest,
@@ -157,7 +157,7 @@ fun ViewedProductCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp)
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
             ) {
                 AsyncImage(
                     model = imageRequest,
