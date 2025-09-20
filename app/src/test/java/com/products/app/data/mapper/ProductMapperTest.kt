@@ -6,13 +6,39 @@ import com.products.app.domain.model.ProductStatus
 import com.products.app.util.MockDataFactory
 import org.junit.Test
 
+/**
+ * Test suite for ProductMapper extension functions.
+ * 
+ * This test class verifies the correct mapping between ProductDto (API response)
+ * and Product domain model. It covers various scenarios including:
+ * - Complete field mapping
+ * - Status enum conversion
+ * - Image URL processing and filtering
+ * - Attribute mapping
+ * - Buy box information handling
+ * - Edge cases with null/empty values
+ * - Search response and pagination mapping
+ * 
+ * The tests ensure that the mapper handles all possible data variations
+ * from the MercadoLibre API response correctly.
+ */
 class ProductMapperTest {
 
+    /**
+     * Tests complete field mapping from ProductDto to Product domain model.
+     * 
+     * Verifies that all fields are correctly mapped from the API response
+     * to the domain model without data loss.
+     */
     @Test
     fun `when ProductDto has all fields, should map to complete Product domain model`() {
-
+        // Given
         val productDto = MockDataFactory.createProductDto()
+        
+        // When
         val domainProduct = productDto.toDomain()
+        
+        // Then
         assertThat(domainProduct.id).isEqualTo(productDto.id)
         assertThat(domainProduct.name).isEqualTo(productDto.name)
         assertThat(domainProduct.status).isEqualTo(ProductStatus.ACTIVE)

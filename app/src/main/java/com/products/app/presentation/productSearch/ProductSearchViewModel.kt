@@ -15,6 +15,21 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Product Search screen that manages search results and pagination.
+ * 
+ * This ViewModel handles product search operations, including initial search,
+ * pagination for infinite scrolling, and search history management. It coordinates
+ * between multiple use cases to provide a seamless search experience.
+ * 
+ * The ViewModel follows the MVVM pattern and uses StateFlow to expose UI state
+ * changes to the Compose UI. It manages loading states, error handling, and
+ * pagination logic for infinite scrolling.
+ * 
+ * @param searchProductsUseCase Use case for performing product searches
+ * @param loadMoreProductsUseCase Use case for loading additional search results
+ * @param saveSearchUseCase Use case for saving search queries to history
+ */
 @HiltViewModel
 class ProductSearchViewModel @Inject constructor(
     private val searchProductsUseCase: SearchProductsUseCase,
@@ -25,13 +40,25 @@ class ProductSearchViewModel @Inject constructor(
     private val _ui = MutableStateFlow(ProductSearchUiState())
     val ui: StateFlow<ProductSearchUiState> = _ui
 
+    /**
+     * Updates the search query in the UI state.
+     * 
+     * @param q The new search query text
+     */
     fun onQueryChange(q: String) {
         _ui.update { 
             it.copy(query = q) 
         }
     }
 
-
+    /**
+     * Performs the initial search for products.
+     * 
+     * This method handles the first page of search results, including loading state
+     * management, error handling, and saving the search query to history.
+     * 
+     * @param limit Maximum number of products to return (defaults to PaginationConstants.DEFAULT_PAGE_SIZE)
+     */
     fun searchFirstPage(limit: Int = PaginationConstants.DEFAULT_PAGE_SIZE) = viewModelScope.launch {
         val q = ui.value.query.trim()
         if (q.isEmpty()) return@launch

@@ -34,6 +34,21 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.products.app.R
 
+/**
+ * A reusable search bar component with Material Design styling.
+ * 
+ * This composable provides a search input field with a search button and clear functionality.
+ * It handles focus management, keyboard actions, and provides visual feedback for user interactions.
+ * The component automatically manages focus state and triggers appropriate callbacks.
+ * 
+ * @param modifier Modifier to be applied to the search bar container
+ * @param query Current search query text
+ * @param onQueryChange Callback invoked when the query text changes
+ * @param onSearchClick Callback invoked when search is triggered (button click or keyboard action)
+ * @param onFocusChange Callback invoked when focus state changes (for showing/hiding suggestions)
+ * @param placeholder Custom placeholder text (defaults to resource string)
+ * @param enabled Whether the search bar is enabled for user interaction
+ */
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,

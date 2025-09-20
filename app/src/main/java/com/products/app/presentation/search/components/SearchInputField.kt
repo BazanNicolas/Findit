@@ -17,8 +17,21 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.products.app.R
 
+/**
+ * A clean and simple search input field component.
+ * 
+ * This component provides a minimalistic search input with clear functionality.
+ * It uses BasicTextField for better control over the text input appearance
+ * and includes a clear button when text is present.
+ * 
+ * @param query Current search query text
+ * @param onQueryChange Callback invoked when the query text changes
+ * @param onSearch Callback invoked when search is triggered (keyboard action)
+ * @param onClear Callback invoked when clear button is clicked
+ * @param modifier Modifier to be applied to the component
+ */
 @Composable
-fun SearchBar(
+fun SearchInputField(
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,

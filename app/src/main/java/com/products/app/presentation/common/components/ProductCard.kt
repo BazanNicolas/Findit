@@ -44,6 +44,16 @@ import com.products.app.R
 import com.products.app.domain.model.Product
 import com.products.app.domain.model.ViewedProduct
 
+/**
+ * A reusable product card component that displays product information in a Material Design card.
+ * 
+ * This composable renders a product with its image, name, and handles user interactions.
+ * It includes press animations and proper accessibility support.
+ * 
+ * @param modifier Modifier to be applied to the card
+ * @param product The Product domain model containing product information
+ * @param onProductClick Callback invoked when the product card is clicked
+ */
 @Composable
 fun ProductCard(
     modifier: Modifier = Modifier,
@@ -116,6 +126,18 @@ fun ProductCard(
     }
 }
 
+/**
+ * A specialized product card component for displaying recently viewed products.
+ * 
+ * This composable renders a viewed product with its image, name, and includes
+ * a delete button for removing the product from the viewed history. It's
+ * optimized for smaller display sizes compared to the main ProductCard.
+ * 
+ * @param modifier Modifier to be applied to the card
+ * @param product The ViewedProduct domain model containing viewed product information
+ * @param onProductClick Callback invoked when the product card is clicked (passes product ID)
+ * @param onDeleteClick Callback invoked when the delete button is clicked
+ */
 @Composable
 fun ViewedProductCard(
     modifier: Modifier = Modifier,

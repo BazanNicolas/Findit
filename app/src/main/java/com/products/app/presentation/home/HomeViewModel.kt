@@ -9,13 +9,27 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Home screen that manages recently viewed products and recent searches.
+ * 
+ * This ViewModel coordinates between multiple use cases to provide a unified state for the home screen.
+ * It handles user interactions like deleting search history and viewed products.
+ * 
+ * The ViewModel follows the MVVM pattern and uses StateFlow to expose UI state changes
+ * to the Compose UI. It manages the loading of initial data and handles user interactions
+ * by delegating to appropriate use cases.
+ * 
+ * @param getRecentSearchesUseCase Use case for retrieving recent search history
+ * @param getRecentViewedProductsUseCase Use case for retrieving recently viewed products
+ * @param deleteSearchUseCase Use case for deleting individual search history entries
+ * @param clearAllSearchesUseCase Use case for clearing all search history
+ * @param deleteViewedProductUseCase Use case for deleting individual viewed products
+ * @param clearAllViewedProductsUseCase Use case for clearing all viewed products
+ */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getRecentSearchesUseCase: GetRecentSearchesUseCase,
-    private val getMatchingSearchesUseCase: GetMatchingSearchesUseCase,
-    private val getAutosuggestUseCase: GetAutosuggestUseCase,
     private val getRecentViewedProductsUseCase: GetRecentViewedProductsUseCase,
-    private val saveSearchUseCase: SaveSearchUseCase,
     private val deleteSearchUseCase: DeleteSearchUseCase,
     private val clearAllSearchesUseCase: ClearAllSearchesUseCase,
     private val deleteViewedProductUseCase: DeleteViewedProductUseCase,
@@ -29,6 +43,12 @@ class HomeViewModel @Inject constructor(
         loadInitialData()
     }
     
+    /**
+     * Loads initial data for the home screen.
+     * 
+     * This method combines recent searches and recently viewed products
+     * to populate the initial state of the home screen.
+     */
     private fun loadInitialData() {
         viewModelScope.launch {
             combine(
@@ -43,114 +63,6 @@ class HomeViewModel @Inject constructor(
         }
     }
     
-    fun onQueryChange(query: String) {
-        _uiState.value = _uiState.value.copy(searchQuery = query)
-        
-        if (query.isBlank()) {
-            // Load history only when no text is entered
-            loadRecentHistory()
-        } else {
-            // Load suggestions and history only when text is entered
-            loadMatchingHistory(query)
-            loadSuggestions(query)
-        }
-    }
-    
-    private fun loadRecentHistory() {
-        viewModelScope.launch {
-            getRecentSearchesUseCase(5)
-                .onEach { history ->
-                    _uiState.value = _uiState.value.copy(
-                        searchHistory = history,
-                        showSearchHistory = history.isNotEmpty(),
-                        showSuggestions = false
-                    )
-                }
-                .collect()
-        }
-    }
-    
-    private fun loadMatchingHistory(query: String) {
-        viewModelScope.launch {
-            getMatchingSearchesUseCase(query)
-                .onEach { history ->
-                    _uiState.value = _uiState.value.copy(
-                        searchHistory = history,
-                        showSearchHistory = history.isNotEmpty(),
-                        showSuggestions = false
-                    )
-                }
-                .collect()
-        }
-    }
-    
-    private fun loadSuggestions(query: String) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(loadingSuggestions = true)
-            
-            val result = getAutosuggestUseCase(query)
-            when (result) {
-                is com.products.app.core.AppResult.Success -> {
-                    _uiState.value = _uiState.value.copy(
-                        suggestions = result.data,
-                        showSuggestions = result.data.isNotEmpty(),
-                        loadingSuggestions = false
-                    )
-                }
-                is com.products.app.core.AppResult.Error -> {
-                    _uiState.value = _uiState.value.copy(
-                        loadingSuggestions = false,
-                        showSuggestions = false
-                    )
-                }
-            }
-        }
-    }
-    
-    fun onSuggestionClick(suggestion: com.products.app.domain.model.SearchSuggestion) {
-        _uiState.value = _uiState.value.copy(
-            searchQuery = suggestion.query,
-            showSuggestions = false
-        )
-    }
-    
-    fun onHistoryClick(history: SearchHistory) {
-        _uiState.value = _uiState.value.copy(
-            searchQuery = history.query,
-            showSearchHistory = false
-        )
-    }
-    
-    fun hideSuggestions() {
-        _uiState.value = _uiState.value.copy(
-            showSuggestions = false,
-            showSearchHistory = false
-        )
-    }
-    
-    fun showSearchHistory() {
-        if (_uiState.value.searchQuery.isBlank()) {
-            loadRecentHistory()
-        }
-    }
-    
-    fun onSearchClick() {
-        val query = _uiState.value.searchQuery.trim()
-        if (query.isNotBlank()) {
-            viewModelScope.launch {
-                saveSearchUseCase(query)
-            }
-        }
-    }
-    
-    fun clearSearch() {
-        _uiState.value = _uiState.value.copy(
-            searchQuery = "",
-            showSuggestions = false,
-            showSearchHistory = false
-        )
-        loadRecentHistory()
-    }
     
     fun deleteSearch(search: SearchHistory) {
         viewModelScope.launch {

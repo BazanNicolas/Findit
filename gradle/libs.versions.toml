@@ -1,35 +1,63 @@
+# Version Catalog for Products Android App
+# This file centralizes all dependency versions used throughout the project
+# for better maintainability and consistency across modules.
+
 [versions]
+# Android Gradle Plugin - Core build system for Android projects
 agp = "8.13.0"
-retrofit = "3.0.0"
-converterScalars = "3.0.0"
-kotlin = "2.2.20"
-coreKtx = "1.17.0"
-junit = "4.13.2"
-junitVersion = "1.3.0"
-espressoCore = "3.7.0"
-lifecycleRuntimeKtx = "2.9.4"
-activityCompose = "1.11.0"
-composeBom = "2025.09.00"
-moshi = "1.15.2"
-okhttpLogging = "5.1.0"
-ksp = "2.0.21-1.0.25"
-coil = "3.3.0"
-room = "2.8.0"
-mockito = "5.8.0"
-mockitoKotlin = "5.2.1"
-turbine = "1.0.0"
-truth = "1.1.5"
-coroutinesTest = "1.7.3"
-archCoreTesting = "2.2.0"
+
+# Networking Libraries
+retrofit = "3.0.0"                               # HTTP client for REST API calls
+converterScalars = "3.0.0"                       # Retrofit converter for scalar types
+
+# Kotlin Language and Compiler
+kotlin = "2.2.20"                                # Kotlin programming language
+ksp = "2.0.21-1.0.25"                           # Kotlin Symbol Processing for code generation
+
+# AndroidX Core Libraries
+coreKtx = "1.17.0"                              # Kotlin extensions for Android core
+lifecycleRuntimeKtx = "2.9.4"                   # Lifecycle-aware components with Kotlin support
+activityCompose = "1.11.0"                      # Compose integration for Activities
+
+# Jetpack Compose UI Framework
+composeBom = "2025.09.00"                       # Compose BOM ensures compatible versions
+
+# Testing Framework Versions
+junit = "4.13.2"                                 # Unit testing framework
+junitVersion = "1.3.0"                          # Android-specific JUnit extensions
+espressoCore = "3.7.0"                          # UI testing framework
+
+# JSON Serialization
+moshi = "1.15.2"                                 # JSON serialization/deserialization
+
+# HTTP Client
+okhttpLogging = "5.1.0"                          # HTTP logging interceptor
+
+# Image Loading
+coil = "3.3.0"                                   # Image loading library for Compose
+
+# Local Database
+room = "2.8.0"                                   # SQLite database abstraction layer
+
+# Testing Utilities
+mockito = "5.20.0"                                # Mocking framework for unit tests
+mockitoKotlin = "6.0.0"                         # Kotlin-friendly Mockito extensions
+turbine = "1.2.1"                                # Flow testing utilities
+truth = "1.4.5"                                  # Fluent assertions for testing
+coroutinesTest = "1.10.2"                        # Coroutines testing utilities
+archCoreTesting = "2.2.0"                       # Architecture components testing
+
+# Library Dependencies
+# This section defines all the libraries used in the project with their specific versions
+# and groups for easy reference in build.gradle files.
 
 [libraries]
+# AndroidX Core Libraries
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-converter-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "converterScalars" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+
+# Jetpack Compose UI Framework
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
@@ -38,23 +66,47 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+
+# Navigation
 androidx-navigation-compose = "androidx.navigation:navigation-compose:2.9.4"
+
+# Material Design Components
 material-components = "com.google.android.material:material:1.13.0"
+
+# Dependency Injection with Hilt
 hilt-android = "com.google.dagger:hilt-android:2.57.1"
 hilt-compiler = "com.google.dagger:hilt-compiler:2.57.1"
 androidx-hilt-navigation-compose = "androidx.hilt:hilt-navigation-compose:1.3.0"
+
+# Networking with Retrofit
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
+converter-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "converterScalars" }
+
+# JSON Serialization with Moshi
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
 moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
 moshi-kotlin-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshi" }
+
+# HTTP Client
 okhttp-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttpLogging" }
+
+# Image Loading with Coil
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+
+# Local Database with Room
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# Testing Libraries
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+
+# Mocking and Testing Utilities
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
@@ -63,11 +115,26 @@ truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
 
+# Gradle Plugins
+# This section defines all the Gradle plugins used in the project
+# for build configuration and code generation.
+
 [plugins]
+# Android Application Plugin - Core plugin for building Android applications
 android-application = { id = "com.android.application", version.ref = "agp" }
+
+# Kotlin Android Plugin - Enables Kotlin support for Android
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
+# Kotlin Compose Plugin - Enables Compose compiler optimizations
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+# Kotlin Annotation Processing Tool - Legacy annotation processing
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version = "2.2.20" }
+
+# Kotlin Symbol Processing - Modern annotation processing for Kotlin
 ksp = { id = "com.google.devtools.ksp", version = "2.0.21-1.0.25" }
+
+# Dagger Hilt Plugin - Dependency injection framework
 dagger-hilt = { id = "com.google.dagger.hilt.android", version = "2.57.1" }
 

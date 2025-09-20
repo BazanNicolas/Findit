@@ -26,7 +26,7 @@ fun SearchScreen(
                 viewModel.onSearchClick()
                 onSearchClick(uiState.searchQuery)
             },
-            onClear = viewModel::clearSearch,
+            onClear = { viewModel.clearSearch() },
             onBackClick = onBackClick
         )
         

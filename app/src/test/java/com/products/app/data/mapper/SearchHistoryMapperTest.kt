@@ -5,6 +5,20 @@ import com.products.app.data.local.entity.SearchHistoryEntity
 import com.products.app.domain.model.SearchHistory
 import org.junit.Test
 
+/**
+ * Test suite for SearchHistoryMapper extension functions.
+ * 
+ * This test class verifies the bidirectional mapping between SearchHistoryEntity
+ * (database entity) and SearchHistory domain model. It covers various scenarios including:
+ * - Basic field mapping in both directions
+ * - Edge cases with empty queries
+ * - Special characters and long queries
+ * - Timestamp handling (including edge cases)
+ * - Round-trip conversion integrity
+ * 
+ * The tests ensure that the mapper preserves data integrity during
+ * entity-domain conversions and handles all edge cases gracefully.
+ */
 class SearchHistoryMapperTest {
 
     @Test

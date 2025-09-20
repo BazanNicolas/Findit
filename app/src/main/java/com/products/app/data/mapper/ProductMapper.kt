@@ -3,6 +3,15 @@ package com.products.app.data.mapper
 import com.products.app.data.remote.dto.*
 import com.products.app.domain.model.*
 
+/**
+ * Extension function to convert ProductDto to domain Product model.
+ * 
+ * This mapper handles the transformation from the API response format to the
+ * domain model, including status enum conversion, image URL processing,
+ * and buy box information extraction.
+ * 
+ * @return Product domain model with properly mapped data
+ */
 fun ProductDto.toDomain(): Product {
     val statusEnum = when (status?.lowercase()) {
         "active" -> ProductStatus.ACTIVE
@@ -47,6 +56,15 @@ fun ProductDto.toDomain(): Product {
     )
 }
 
+/**
+ * Extension function to convert SearchResponseDto to domain ProductSearchResult model.
+ * 
+ * This mapper transforms the complete search response from the API into the
+ * domain model, including the list of products, pagination information,
+ * and search metadata.
+ * 
+ * @return ProductSearchResult domain model with mapped search results
+ */
 fun SearchResponseDto.toDomain(): ProductSearchResult {
     return ProductSearchResult(
         products = results.map { it.toDomain() },
@@ -57,6 +75,11 @@ fun SearchResponseDto.toDomain(): ProductSearchResult {
     )
 }
 
+/**
+ * Extension function to convert PagingDto to domain Paging model.
+ * 
+ * @return Paging domain model with pagination information
+ */
 fun PagingDto.toDomain(): Paging {
     return Paging(
         total = total,
@@ -65,6 +88,11 @@ fun PagingDto.toDomain(): Paging {
     )
 }
 
+/**
+ * Extension function to convert AttributeDto to domain ProductAttribute model.
+ * 
+ * @return ProductAttribute domain model with attribute information
+ */
 fun AttributeDto.toDomain(): ProductAttribute {
     return ProductAttribute(
         id = id,

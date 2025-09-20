@@ -1,11 +1,18 @@
 import java.util.Properties
 
+/**
+ * Build configuration for the Products Android Application module.
+ * 
+ * This file configures the Android app module with all necessary plugins,
+ * dependencies, and build settings for the Products application.
+ */
+
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.dagger.hilt)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.android.application)      // Android application plugin
+    alias(libs.plugins.kotlin.android)          // Kotlin support for Android
+    alias(libs.plugins.kotlin.compose)          // Compose compiler optimizations
+    alias(libs.plugins.dagger.hilt)             // Dependency injection with Hilt
+    alias(libs.plugins.kotlin.kapt)            // Annotation processing for Hilt
 }
 
 android {
@@ -21,6 +28,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        // Load MercadoLibre API credentials from local.properties file
+        // These credentials are used for API authentication and should be kept secure
         val props = Properties()
         val localPropsFile = rootProject.file("local.properties")
         if (localPropsFile.exists()) {
@@ -31,6 +40,7 @@ android {
         val mlClientId = props.getProperty("ML_CLIENT_ID") ?: ""
         val mlClientSecret = props.getProperty("ML_CLIENT_SECRET") ?: ""
 
+        // Expose API credentials as BuildConfig fields for runtime access
         buildConfigField("String", "ML_ACCESS_TOKEN", "\"$mlToken\"")
         buildConfigField("String", "ML_REFRESH_TOKEN", "\"$mlRefreshToken\"")
         buildConfigField("String", "ML_CLIENT_ID", "\"$mlClientId\"")
@@ -46,25 +56,32 @@ android {
             )
         }
     }
+    
+    // Java compilation settings
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    
+    // Kotlin compilation settings
     kotlinOptions {
         jvmTarget = "11"
     }
 
+    // Enable build features
     buildFeatures {
-        compose = true
-        buildConfig = true
+        compose = true      // Enable Jetpack Compose
+        buildConfig = true  // Enable BuildConfig generation for API credentials
     }
 }
 
 dependencies {
-
+    // AndroidX Core Libraries
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    
+    // Jetpack Compose UI Framework
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
@@ -72,6 +89,8 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.material.components)
+    
+    // Testing Dependencies
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.junit.jupiter)
@@ -80,10 +99,14 @@ dependencies {
     testImplementation(libs.truth)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.arch.core.testing)
+    
+    // Android Instrumentation Testing
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    
+    // Debug Tools
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
@@ -92,25 +115,24 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
-    // Retrofit
+    // Networking with Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.converter.moshi)
     implementation(libs.converter.scalars)
     implementation(libs.okhttp.logging.interceptor)
     
-    // Moshi
+    // JSON Serialization with Moshi
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
     kapt(libs.moshi.kotlin.codegen)
     
-    // Coil for image loading
+    // Image Loading with Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     
-    // Room
+    // Local Database with Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
-    
 }

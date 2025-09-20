@@ -43,7 +43,7 @@ fun SearchTopBar(
                 
                 Spacer(modifier = Modifier.width(12.dp))
                 
-                SearchBar(
+                SearchInputField(
                     query = query,
                     onQueryChange = onQueryChange,
                     onSearch = onSearch,

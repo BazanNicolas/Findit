@@ -33,6 +33,22 @@ import com.products.app.R
 import com.products.app.presentation.common.components.ViewedProductCard
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
+/**
+ * The main home screen of the Products application.
+ * 
+ * This screen serves as the landing page and provides access to:
+ * - Recent search history
+ * - Recently viewed products
+ * - Quick navigation to search screen
+ * 
+ * The screen follows Material Design 3 principles and provides a clean,
+ * intuitive interface for users to discover and search for products.
+ * 
+ * @param onSearchClick Callback invoked when a search is performed
+ * @param onProductClick Callback invoked when a product is selected
+ * @param onNavigateToSearch Callback invoked when navigating to the search screen
+ * @param viewModel The HomeViewModel instance (injected via Hilt)
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(

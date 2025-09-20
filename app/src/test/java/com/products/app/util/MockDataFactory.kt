@@ -4,12 +4,29 @@ import com.products.app.domain.model.*
 import com.products.app.data.remote.dto.*
 
 /**
- * Factory para crear objetos mock para testing.
- * Proporciona datos consistentes y realistas para tests.
+ * Factory for creating mock objects for testing.
+ * 
+ * This factory provides consistent and realistic test data for unit tests,
+ * integration tests, and UI tests. It includes factory methods for all
+ * domain models, DTOs, and common test scenarios.
+ * 
+ * The factory uses default values that are realistic and representative
+ * of actual MercadoLibre data, making tests more meaningful and easier
+ * to understand.
  */
 object MockDataFactory {
     
     // Domain Models
+    
+    /**
+     * Creates a mock Product with realistic default values.
+     * 
+     * @param id Product identifier (default: "MLA123456789")
+     * @param name Product name (default: "iPhone 15 Pro Max 256GB")
+     * @param status Product status (default: ACTIVE)
+     * @param thumbnailUrl Product thumbnail URL (default: iPhone image URL)
+     * @return Mock Product with realistic attributes and buy box information
+     */
     fun createProduct(
         id: String = "MLA123456789",
         name: String = "iPhone 15 Pro Max 256GB",

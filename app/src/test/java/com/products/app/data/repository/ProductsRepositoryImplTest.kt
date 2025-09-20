@@ -19,6 +19,21 @@ import org.mockito.kotlin.whenever
 import org.mockito.kotlin.any
 import java.io.IOException
 
+/**
+ * Test suite for ProductsRepositoryImpl.
+ * 
+ * This test class verifies the repository implementation for product search operations.
+ * It covers various scenarios including:
+ * - Successful API calls with data mapping
+ * - Error handling and exception propagation
+ * - Parameter passing to the API
+ * - Empty result handling
+ * - Multiple product results
+ * - Edge cases with empty queries
+ * 
+ * The tests use Mockito to mock the ProductsApi and NetworkErrorHandler dependencies,
+ * ensuring isolated unit testing of the repository logic.
+ */
 @ExperimentalCoroutinesApi
 class ProductsRepositoryImplTest {
 
