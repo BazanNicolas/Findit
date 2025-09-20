@@ -41,15 +41,11 @@ class SearchProductsUseCaseTest {
 
     @Test
     fun `when query is valid, should return success result`() = runTest {
-        // Given
+
         val query = "iphone"
         val expectedResult = MockDataFactory.createProductSearchResult()
         whenever(repository.search(query, 0, 10)).thenReturn(AppResult.Success(expectedResult))
-
-        // When
         val result = useCase(query, 0, 10)
-
-        // Then
         val actualResult = result.assertSuccess()
         assertThat(actualResult).isEqualTo(expectedResult)
         verify(repository).search(query, 0, 10)
@@ -57,38 +53,30 @@ class SearchProductsUseCaseTest {
 
     @Test
     fun `when query has leading and trailing spaces, should trim query`() = runTest {
-        // Given
+
         val queryWithSpaces = "  iphone  "
         val trimmedQuery = "iphone"
         val expectedResult = MockDataFactory.createProductSearchResult()
         whenever(repository.search(trimmedQuery, 0, 10)).thenReturn(AppResult.Success(expectedResult))
-
-        // When
         val result = useCase(queryWithSpaces, 0, 10)
-
-        // Then
         result.assertSuccess()
         verify(repository).search(trimmedQuery, 0, 10)
     }
 
     @Test
     fun `when repository returns error, should return error result`() = runTest {
-        // Given
+
         val query = "iphone"
         val errorMessage = "Network error"
         whenever(repository.search(any(), any(), any())).thenReturn(AppResult.Error(errorMessage))
-
-        // When
         val result = useCase(query, 0, 10)
-
-        // Then
         result.assertError(errorMessage)
         verify(repository).search(query, 0, 10)
     }
 
     @Test
     fun `when called with custom offset and limit, should pass parameters correctly`() = runTest {
-        // Given
+
         val query = "samsung"
         val offset = 20
         val limit = 5
@@ -98,11 +86,7 @@ class SearchProductsUseCaseTest {
             limit = limit
         )
         whenever(repository.search(query, offset, limit)).thenReturn(AppResult.Success(expectedResult))
-
-        // When
         val result = useCase(query, offset, limit)
-
-        // Then
         val actualResult = result.assertSuccess()
         assertThat(actualResult.paging.offset).isEqualTo(offset)
         assertThat(actualResult.paging.limit).isEqualTo(limit)
@@ -111,15 +95,11 @@ class SearchProductsUseCaseTest {
 
     @Test
     fun `when query is empty string, should still call repository with empty query`() = runTest {
-        // Given
+
         val emptyQuery = ""
         val expectedResult = MockDataFactory.createProductSearchResult(products = emptyList())
         whenever(repository.search(emptyQuery, 0, 10)).thenReturn(AppResult.Success(expectedResult))
-
-        // When
         val result = useCase(emptyQuery, 0, 10)
-
-        // Then
         val actualResult = result.assertSuccess()
         assertThat(actualResult.products).isEmpty()
         verify(repository).search(emptyQuery, 0, 10)
@@ -127,33 +107,23 @@ class SearchProductsUseCaseTest {
 
     @Test
     fun `when query is only spaces, should call repository with empty string`() = runTest {
-        // Given
+
         val spacesQuery = "   "
         val expectedResult = MockDataFactory.createProductSearchResult(products = emptyList())
         whenever(repository.search("", 0, 10)).thenReturn(AppResult.Success(expectedResult))
-
-        // When
         val result = useCase(spacesQuery, 0, 10)
-
-        // Then
         result.assertSuccess()
         verify(repository).search("", 0, 10)
     }
 
     @Test
     fun `when using default parameters, should use correct defaults`() = runTest {
-        // Given
+
         val query = "test"
         val expectedResult = MockDataFactory.createProductSearchResult()
         whenever(repository.search(query, 0, 10)).thenReturn(AppResult.Success(expectedResult))
-
-        // When
         val result = useCase(query) // Using defaults
-
-        // Then
         result.assertSuccess()
         verify(repository).search(query, 0, 10)
     }
 }
-
-

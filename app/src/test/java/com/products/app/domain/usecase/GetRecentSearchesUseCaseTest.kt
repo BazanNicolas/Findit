@@ -38,7 +38,7 @@ class GetRecentSearchesUseCaseTest {
 
     @Test
     fun `when repository returns search history, should return flow with data`() = runTest {
-        // Given
+
         val limit = 5
         val expectedSearchHistory = MockDataFactory.createSearchHistoryList(3)
         whenever(repository.getRecentSearches(limit)).thenReturn(flowOf(expectedSearchHistory))
@@ -56,7 +56,7 @@ class GetRecentSearchesUseCaseTest {
 
     @Test
     fun `when repository returns empty list, should return empty flow`() = runTest {
-        // Given
+
         val limit = 10
         val emptyHistory = emptyList<com.products.app.domain.model.SearchHistory>()
         whenever(repository.getRecentSearches(limit)).thenReturn(flowOf(emptyHistory))
@@ -73,7 +73,7 @@ class GetRecentSearchesUseCaseTest {
 
     @Test
     fun `when using default limit, should use default value`() = runTest {
-        // Given
+
         val defaultLimit = 10
         val expectedHistory = MockDataFactory.createSearchHistoryList(5)
         whenever(repository.getRecentSearches(defaultLimit)).thenReturn(flowOf(expectedHistory))
@@ -90,7 +90,7 @@ class GetRecentSearchesUseCaseTest {
 
     @Test
     fun `when limit is 1, should return single item`() = runTest {
-        // Given
+
         val limit = 1
         val singleItemHistory = listOf(MockDataFactory.createSearchHistory("latest search"))
         whenever(repository.getRecentSearches(limit)).thenReturn(flowOf(singleItemHistory))
@@ -106,7 +106,7 @@ class GetRecentSearchesUseCaseTest {
 
     @Test
     fun `when repository emits multiple values, should emit all values`() = runTest {
-        // Given
+
         val limit = 5
         val firstEmission = MockDataFactory.createSearchHistoryList(2)
         val secondEmission = MockDataFactory.createSearchHistoryList(3)
@@ -128,7 +128,7 @@ class GetRecentSearchesUseCaseTest {
 
     @Test
     fun `when limit is zero, should still call repository with zero`() = runTest {
-        // Given
+
         val limit = 0
         val emptyHistory = emptyList<com.products.app.domain.model.SearchHistory>()
         whenever(repository.getRecentSearches(limit)).thenReturn(flowOf(emptyHistory))
@@ -145,7 +145,7 @@ class GetRecentSearchesUseCaseTest {
 
     @Test
     fun `when search history is ordered by timestamp, should maintain order`() = runTest {
-        // Given
+
         val limit = 3
         val currentTime = System.currentTimeMillis()
         val orderedHistory = listOf(
@@ -170,5 +170,3 @@ class GetRecentSearchesUseCaseTest {
         }
     }
 }
-
-

@@ -1,4 +1,4 @@
-package com.products.app.presentation.home
+package com.products.app.presentation.search
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
@@ -6,12 +6,14 @@ import com.google.common.truth.Truth.assertThat
 import com.products.app.core.AppResult
 import com.products.app.domain.model.SearchHistory
 import com.products.app.domain.model.SearchSuggestion
+import com.products.app.domain.model.ViewedProduct
 import com.products.app.domain.usecase.*
 import com.products.app.util.MockDataFactory
 import com.products.app.util.TestCoroutineRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -19,9 +21,12 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoRule
 import org.mockito.kotlin.*
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers.anyInt
 
 @ExperimentalCoroutinesApi
-class HomeViewModelTest {
+class SearchViewModelTest {
 
     @get:Rule
     val mockitoRule: MockitoRule = MockitoJUnit.rule()
@@ -59,15 +64,16 @@ class HomeViewModelTest {
     @Mock
     private lateinit var clearAllViewedProductsUseCase: ClearAllViewedProductsUseCase
 
-    private lateinit var viewModel: HomeViewModel
+    private lateinit var viewModel: SearchViewModel
 
     @Before
     fun setUp() {
         // Setup default returns for initialization
-        whenever(getRecentSearchesUseCase(5)).thenReturn(flowOf(emptyList()))
-        whenever(getRecentViewedProductsUseCase(6)).thenReturn(flowOf(emptyList()))
+        whenever(getRecentSearchesUseCase(10)).thenReturn(flowOf(emptyList()))
+        whenever(getRecentViewedProductsUseCase(10)).thenReturn(flowOf(emptyList()))
+        whenever(getMatchingSearchesUseCase(anyString(), anyInt())).thenReturn(flowOf(emptyList()))
 
-        viewModel = HomeViewModel(
+        viewModel = SearchViewModel(
             getRecentSearchesUseCase = getRecentSearchesUseCase,
             getMatchingSearchesUseCase = getMatchingSearchesUseCase,
             getAutosuggestUseCase = getAutosuggestUseCase,
@@ -86,13 +92,13 @@ class HomeViewModelTest {
         viewModel.uiState.test {
             val initialState = awaitItem()
             assertThat(initialState.searchQuery).isEmpty()
-            assertThat(initialState.recentSearches).isEmpty()
-            assertThat(initialState.recentViewedProducts).isEmpty()
             assertThat(initialState.suggestions).isEmpty()
             assertThat(initialState.searchHistory).isEmpty()
+            assertThat(initialState.recentViewedProducts).isEmpty()
+            assertThat(initialState.loadingSuggestions).isFalse()
             assertThat(initialState.showSuggestions).isFalse()
             assertThat(initialState.showSearchHistory).isFalse()
-            assertThat(initialState.loadingSuggestions).isFalse()
+            assertThat(initialState.error).isNull()
         }
     }
 
@@ -104,9 +110,9 @@ class HomeViewModelTest {
 
         // Reset mocks and setup new returns
         reset(getRecentSearchesUseCase, getRecentViewedProductsUseCase)
-        whenever(getRecentSearchesUseCase(5)).thenReturn(flowOf(recentSearches))
-        whenever(getRecentViewedProductsUseCase(6)).thenReturn(flowOf(recentViewedProducts))
-        val newViewModel = HomeViewModel(
+        whenever(getRecentSearchesUseCase(10)).thenReturn(flowOf(recentSearches))
+        whenever(getRecentViewedProductsUseCase(10)).thenReturn(flowOf(recentViewedProducts))
+        val newViewModel = SearchViewModel(
             getRecentSearchesUseCase = getRecentSearchesUseCase,
             getMatchingSearchesUseCase = getMatchingSearchesUseCase,
             getAutosuggestUseCase = getAutosuggestUseCase,
@@ -119,12 +125,13 @@ class HomeViewModelTest {
         )
         newViewModel.uiState.test {
             val state = awaitItem()
-            assertThat(state.recentSearches).isEqualTo(recentSearches)
+            assertThat(state.searchHistory).isEqualTo(recentSearches)
             assertThat(state.recentViewedProducts).isEqualTo(recentViewedProducts)
+            assertThat(state.showSearchHistory).isTrue()
         }
 
-        verify(getRecentSearchesUseCase).invoke(5)
-        verify(getRecentViewedProductsUseCase).invoke(6)
+        verify(getRecentSearchesUseCase).invoke(10)
+        verify(getRecentViewedProductsUseCase).invoke(10)
     }
 
     @Test
@@ -155,7 +162,7 @@ class HomeViewModelTest {
     fun `when query changes to blank, should load recent history`() = runTest {
 
         val recentHistory = MockDataFactory.createSearchHistoryList(3)
-        whenever(getRecentSearchesUseCase(5)).thenReturn(flowOf(recentHistory))
+        whenever(getRecentSearchesUseCase(10)).thenReturn(flowOf(recentHistory))
         viewModel.onQueryChange("")
         viewModel.uiState.test {
             val state = awaitItem()
@@ -167,7 +174,7 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `when autosuggestions fail, should hide suggestions`() = runTest {
+    fun `when autosuggestions fail, should hide suggestions and show error`() = runTest {
 
         val query = "test"
         val errorMessage = "Network error"
@@ -179,6 +186,7 @@ class HomeViewModelTest {
             assertThat(state.suggestions).isEmpty()
             assertThat(state.showSuggestions).isFalse()
             assertThat(state.loadingSuggestions).isFalse()
+            assertThat(state.error).isEqualTo(errorMessage)
         }
     }
 
@@ -212,35 +220,32 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `when hide suggestions is called, should hide suggestions and history`() = runTest {
+    fun `when clear search is called, should reset query and load recent history`() = runTest {
 
-        viewModel.hideSuggestions()
+        val recentHistory = MockDataFactory.createSearchHistoryList(2)
+        whenever(getRecentSearchesUseCase(10)).thenReturn(flowOf(recentHistory))
+        viewModel.clearSearch()
         viewModel.uiState.test {
             val state = awaitItem()
+            assertThat(state.searchQuery).isEmpty()
             assertThat(state.showSuggestions).isFalse()
-            assertThat(state.showSearchHistory).isFalse()
-        }
-    }
-
-    @Test
-    fun `when show search history with blank query, should load recent history`() = runTest {
-
-        val recentHistory = MockDataFactory.createSearchHistoryList(3)
-        whenever(getRecentSearchesUseCase(5)).thenReturn(flowOf(recentHistory))
-
-        // Ensure query is blank
-        viewModel.onQueryChange("")
-        viewModel.showSearchHistory()
-        viewModel.uiState.test {
-            val state = awaitItem()
+            assertThat(state.showSearchHistory).isTrue()
             assertThat(state.searchHistory).isEqualTo(recentHistory)
         }
+        
+        verify(getRecentSearchesUseCase, atLeast(1)).invoke(10)
     }
 
     @Test
-    fun `view model should be properly initialized`() = runTest {
+    fun `when search button is clicked with valid query, should save search`() = runTest {
 
-        assertThat(viewModel).isNotNull()
+        val query = "laptop gaming"
+        whenever(getAutosuggestUseCase(query)).thenReturn(AppResult.Success(emptyList()))
+        
+
+        viewModel.onQueryChange(query)
+        viewModel.onSearchClick()
+        verify(saveSearchUseCase, timeout(1000)).invoke(query)
     }
 
     @Test
@@ -248,7 +253,7 @@ class HomeViewModelTest {
 
         viewModel.onQueryChange("   ")
         viewModel.onSearchClick()
-        verify(saveSearchUseCase, never()).invoke(any())
+        verifyNoInteractions(saveSearchUseCase)
     }
 
     @Test
@@ -256,59 +261,104 @@ class HomeViewModelTest {
 
         viewModel.onQueryChange("")
         viewModel.onSearchClick()
-        verify(saveSearchUseCase, never()).invoke(any())
+        verifyNoInteractions(saveSearchUseCase)
+    }
+
+    @Test
+    fun `when delete search is called, should call delete use case`() = runTest {
+
+        val search = MockDataFactory.createSearchHistory("test search")
+        viewModel.deleteSearch(search)
+        verify(deleteSearchUseCase, timeout(1000)).invoke(search)
+    }
+
+    @Test
+    fun `when clear all searches is called, should call clear all use case`() = runTest {
+
+        viewModel.clearAllSearches()
+        verify(clearAllSearchesUseCase, timeout(1000)).invoke()
+    }
+
+    @Test
+    fun `when delete viewed product is called, should call delete use case`() = runTest {
+
+        val viewedProduct = MockDataFactory.createViewedProduct()
+        viewModel.deleteViewedProduct(viewedProduct)
+        verify(deleteViewedProductUseCase).invoke(viewedProduct)
+    }
+
+    @Test
+    fun `when clear all viewed products is called, should call clear all use case`() = runTest {
+
+        viewModel.clearAllViewedProducts()
+        verify(clearAllViewedProductsUseCase).invoke()
     }
 
     @Test
     fun `when loading suggestions, should show loading state`() = runTest {
 
-        val query = "laptop"
+        val query = "smartphone"
         whenever(getMatchingSearchesUseCase(query)).thenReturn(flowOf(emptyList()))
         whenever(getAutosuggestUseCase(query)).thenReturn(AppResult.Success(emptyList()))
         viewModel.onQueryChange(query)
         viewModel.uiState.test {
             val state = awaitItem()
             // Should eventually call the autosuggest use case
-            verify(getAutosuggestUseCase).invoke(query)
-            verify(getMatchingSearchesUseCase).invoke(query)
+        }
+        verify(getAutosuggestUseCase).invoke(query)
+        verify(getMatchingSearchesUseCase).invoke(query)
+    }
+
+    @Test
+    fun `when query has whitespace, should trim before saving`() = runTest {
+
+        val queryWithSpaces = "  laptop gaming  "
+        val expectedTrimmedQuery = "laptop gaming"
+        whenever(getAutosuggestUseCase(queryWithSpaces)).thenReturn(AppResult.Success(emptyList()))
+        whenever(getAutosuggestUseCase(expectedTrimmedQuery)).thenReturn(AppResult.Success(emptyList()))
+        whenever(getMatchingSearchesUseCase(queryWithSpaces)).thenReturn(flowOf(emptyList()))
+        
+
+        viewModel.onQueryChange(queryWithSpaces)
+        viewModel.onSearchClick()
+        verify(saveSearchUseCase, timeout(1000)).invoke(expectedTrimmedQuery)
+    }
+
+    @Test
+    fun `when multiple queries are entered, should handle each correctly`() = runTest {
+
+        val query1 = "iphone"
+        val query2 = "samsung"
+        val suggestions1 = MockDataFactory.createSearchSuggestionList(2)
+        val suggestions2 = MockDataFactory.createSearchSuggestionList(1)
+
+        whenever(getAutosuggestUseCase(query1)).thenReturn(AppResult.Success(suggestions1))
+        whenever(getAutosuggestUseCase(query2)).thenReturn(AppResult.Success(suggestions2))
+        whenever(getMatchingSearchesUseCase(query1)).thenReturn(flowOf(emptyList()))
+        whenever(getMatchingSearchesUseCase(query2)).thenReturn(flowOf(emptyList()))
+        viewModel.onQueryChange(query1)
+        viewModel.onQueryChange(query2)
+        verify(getAutosuggestUseCase).invoke(query1)
+        verify(getAutosuggestUseCase).invoke(query2)
+        
+        viewModel.uiState.test {
+            val finalState = awaitItem()
+            assertThat(finalState.searchQuery).isEqualTo(query2)
+            assertThat(finalState.suggestions).isEqualTo(suggestions2)
         }
     }
 
     @Test
-    fun `when view model is created, should have valid instance`() = runTest {
+    fun `when autosuggest returns empty list, should hide suggestions`() = runTest {
 
-        assertThat(viewModel).isNotNull()
-        assertThat(viewModel.toString()).isNotEmpty()
-    }
-
-    @Test
-    fun `when recent searches and viewed products update, should reflect in UI state`() = runTest {
-
-        val initialSearches = MockDataFactory.createSearchHistoryList(2)
-        val updatedSearches = MockDataFactory.createSearchHistoryList(3)
-        val initialProducts = MockDataFactory.createViewedProductList(2)
-        val updatedProducts = MockDataFactory.createViewedProductList(4)
-
-        // Reset and setup new flows that emit multiple values
-        reset(getRecentSearchesUseCase, getRecentViewedProductsUseCase)
-        whenever(getRecentSearchesUseCase(5)).thenReturn(
-            flowOf(initialSearches, updatedSearches)
-        )
-        whenever(getRecentViewedProductsUseCase(6)).thenReturn(
-            flowOf(initialProducts, updatedProducts)
-        )
-        val newViewModel = HomeViewModel(
-            getRecentSearchesUseCase = getRecentSearchesUseCase,
-            getMatchingSearchesUseCase = getMatchingSearchesUseCase,
-            getAutosuggestUseCase = getAutosuggestUseCase,
-            getRecentViewedProductsUseCase = getRecentViewedProductsUseCase,
-            saveSearchUseCase = saveSearchUseCase,
-            deleteSearchUseCase = deleteSearchUseCase,
-            clearAllSearchesUseCase = clearAllSearchesUseCase,
-            deleteViewedProductUseCase = deleteViewedProductUseCase,
-            clearAllViewedProductsUseCase = clearAllViewedProductsUseCase
-        )
-        verify(getRecentSearchesUseCase).invoke(5)
-        verify(getRecentViewedProductsUseCase).invoke(6)
+        val query = "nonexistent"
+        whenever(getAutosuggestUseCase(query)).thenReturn(AppResult.Success(emptyList()))
+        whenever(getMatchingSearchesUseCase(query)).thenReturn(flowOf(emptyList()))
+        viewModel.onQueryChange(query)
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertThat(state.suggestions).isEmpty()
+            assertThat(state.showSuggestions).isFalse()
+        }
     }
 }

@@ -7,7 +7,7 @@ coreKtx = "1.17.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
-lifecycleRuntimeKtx = "2.9.3"
+lifecycleRuntimeKtx = "2.9.4"
 activityCompose = "1.11.0"
 composeBom = "2025.09.00"
 moshi = "1.15.2"
@@ -15,6 +15,12 @@ okhttpLogging = "5.1.0"
 ksp = "2.0.21-1.0.25"
 coil = "3.3.0"
 room = "2.8.0"
+mockito = "5.8.0"
+mockitoKotlin = "5.2.1"
+turbine = "1.0.0"
+truth = "1.1.5"
+coroutinesTest = "1.7.3"
+archCoreTesting = "2.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,7 +38,7 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-navigation-compose = "androidx.navigation:navigation-compose:2.8.4"
+androidx-navigation-compose = "androidx.navigation:navigation-compose:2.9.4"
 material-components = "com.google.android.material:material:1.13.0"
 hilt-android = "com.google.dagger:hilt-android:2.57.1"
 hilt-compiler = "com.google.dagger:hilt-compiler:2.57.1"
@@ -49,12 +55,19 @@ coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
+androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version = "2.2.10" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version = "2.2.20" }
 ksp = { id = "com.google.devtools.ksp", version = "2.0.21-1.0.25" }
 dagger-hilt = { id = "com.google.dagger.hilt.android", version = "2.57.1" }
 

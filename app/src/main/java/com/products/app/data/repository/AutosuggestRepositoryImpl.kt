@@ -10,7 +10,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class AutosuggestRepositoryImpl @Inject constructor(
-    @Named("autosuggest") private val retrofit: Retrofit,
+    @param:Named("autosuggest") private val retrofit: Retrofit,
     private val errorHandler: NetworkErrorHandler
 ) : AutosuggestRepository {
 

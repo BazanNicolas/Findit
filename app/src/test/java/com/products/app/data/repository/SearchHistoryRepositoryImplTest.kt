@@ -39,7 +39,7 @@ class SearchHistoryRepositoryImplTest {
 
     @Test
     fun `when getting recent searches, should return mapped domain models`() = runTest {
-        // Given
+
         val limit = 5
         val entities = listOf(
             SearchHistoryEntity("iphone", System.currentTimeMillis()),
@@ -63,7 +63,7 @@ class SearchHistoryRepositoryImplTest {
 
     @Test
     fun `when dao returns empty flow, should return empty domain list`() = runTest {
-        // Given
+
         val limit = 10
         whenever(dao.getRecentSearches(limit)).thenReturn(flowOf(emptyList()))
 
@@ -77,14 +77,10 @@ class SearchHistoryRepositoryImplTest {
 
     @Test
     fun `when saving search, should save entity with current timestamp`() = runTest {
-        // Given
+
         val query = "new search"
         val beforeSave = System.currentTimeMillis()
-
-        // When
         repository.saveSearch(query)
-
-        // Then
         val entityCaptor = argumentCaptor<SearchHistoryEntity>()
         verify(dao).insertSearch(entityCaptor.capture())
         
@@ -96,14 +92,10 @@ class SearchHistoryRepositoryImplTest {
 
     @Test
     fun `when saving search with spaces, should trim query`() = runTest {
-        // Given
+
         val queryWithSpaces = "  search with spaces  "
         val expectedTrimmedQuery = "search with spaces"
-
-        // When
         repository.saveSearch(queryWithSpaces)
-
-        // Then
         val entityCaptor = argumentCaptor<SearchHistoryEntity>()
         verify(dao).insertSearch(entityCaptor.capture())
         
@@ -113,7 +105,7 @@ class SearchHistoryRepositoryImplTest {
 
     @Test
     fun `when getting matching searches, should return filtered results`() = runTest {
-        // Given
+
         val query = "iphone"
         val limit = 5
         val matchingEntities = listOf(
@@ -136,16 +128,14 @@ class SearchHistoryRepositoryImplTest {
 
     @Test
     fun `when clearing search history, should call dao clear method`() = runTest {
-        // When
-        repository.clearAllSearches()
 
-        // Then
+        repository.clearAllSearches()
         verify(dao).clearAllSearches()
     }
 
     @Test
     fun `when dao emits multiple values, should emit all mapped values`() = runTest {
-        // Given
+
         val limit = 3
         val firstEmission = listOf(
             SearchHistoryEntity("first", System.currentTimeMillis())
@@ -175,16 +165,12 @@ class SearchHistoryRepositoryImplTest {
 
     @Test
     fun `when saving multiple searches, should save each with unique timestamp`() = runTest {
-        // Given
+
         val query1 = "first search"
         val query2 = "second search"
-
-        // When
         repository.saveSearch(query1)
         Thread.sleep(1) // Ensure different timestamps
         repository.saveSearch(query2)
-
-        // Then
         val entityCaptor = argumentCaptor<SearchHistoryEntity>()
         verify(dao, org.mockito.kotlin.times(2)).insertSearch(entityCaptor.capture())
         

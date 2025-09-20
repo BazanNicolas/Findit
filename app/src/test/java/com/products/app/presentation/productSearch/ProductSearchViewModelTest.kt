@@ -32,19 +32,7 @@ class ProductSearchViewModelTest {
     private lateinit var loadMoreProductsUseCase: LoadMoreProductsUseCase
 
     @Mock
-    private lateinit var getAutosuggestUseCase: GetAutosuggestUseCase
-
-    @Mock
     private lateinit var saveSearchUseCase: SaveSearchUseCase
-
-    @Mock
-    private lateinit var getRecentSearchesUseCase: GetRecentSearchesUseCase
-
-    @Mock
-    private lateinit var getMatchingSearchesUseCase: GetMatchingSearchesUseCase
-
-    @Mock
-    private lateinit var clearSearchHistoryUseCase: ClearSearchHistoryUseCase
 
     private lateinit var viewModel: ProductSearchViewModel
 
@@ -53,11 +41,7 @@ class ProductSearchViewModelTest {
         viewModel = ProductSearchViewModel(
             searchProductsUseCase = searchProductsUseCase,
             loadMoreProductsUseCase = loadMoreProductsUseCase,
-            getAutosuggestUseCase = getAutosuggestUseCase,
-            saveSearchUseCase = saveSearchUseCase,
-            getRecentSearchesUseCase = getRecentSearchesUseCase,
-            getMatchingSearchesUseCase = getMatchingSearchesUseCase,
-            clearSearchHistoryUseCase = clearSearchHistoryUseCase
+            saveSearchUseCase = saveSearchUseCase
         )
     }
 
@@ -78,16 +62,14 @@ class ProductSearchViewModelTest {
         assertThat(state.error).isNull()
         assertThat(state.paginationError).isNull()
         assertThat(state.isInitialLoad).isTrue()
-        assertThat(state.showSuggestions).isFalse()
-        assertThat(state.suggestions).isEmpty()
+        assertThat(state.hasReachedEnd).isFalse()
+        assertThat(state.paging).isNull()
     }
 
     @Test
     fun `clear error should reset error states`() = runTest {
-        // When
-        viewModel.clearError()
 
-        // Then
+        viewModel.clearError()
         val state = viewModel.ui.value
         assertThat(state.error).isNull()
         assertThat(state.paginationError).isNull()
@@ -95,14 +77,10 @@ class ProductSearchViewModelTest {
 
     @Test
     fun `view model should maintain consistent state`() = runTest {
-        // Given
-        viewModel.clearError()
 
-        // When
+        viewModel.clearError()
         val state1 = viewModel.ui.value
         val state2 = viewModel.ui.value
-
-        // Then
         assertThat(state1.error).isEqualTo(state2.error)
         assertThat(state1.paginationError).isEqualTo(state2.paginationError)
         assertThat(state1.loading).isEqualTo(state2.loading)
@@ -115,6 +93,6 @@ class ProductSearchViewModelTest {
         val state = viewModel.ui.value
         assertThat(state.isInitialLoad).isTrue()
         assertThat(state.loading).isFalse()
-        assertThat(state.showSuggestions).isFalse()
+        assertThat(state.hasReachedEnd).isFalse()
     }
 }

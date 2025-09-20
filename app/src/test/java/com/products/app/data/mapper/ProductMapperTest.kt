@@ -10,13 +10,9 @@ class ProductMapperTest {
 
     @Test
     fun `when ProductDto has all fields, should map to complete Product domain model`() {
-        // Given
+
         val productDto = MockDataFactory.createProductDto()
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.id).isEqualTo(productDto.id)
         assertThat(domainProduct.name).isEqualTo(productDto.name)
         assertThat(domainProduct.status).isEqualTo(ProductStatus.ACTIVE)
@@ -31,66 +27,46 @@ class ProductMapperTest {
 
     @Test
     fun `when ProductDto has active status, should map to ACTIVE enum`() {
-        // Given
+
         val productDto = MockDataFactory.createProductDto().copy(status = "active")
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.status).isEqualTo(ProductStatus.ACTIVE)
     }
 
     @Test
     fun `when ProductDto has inactive status, should map to INACTIVE enum`() {
-        // Given
+
         val productDto = MockDataFactory.createProductDto().copy(status = "inactive")
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.status).isEqualTo(ProductStatus.INACTIVE)
     }
 
     @Test
     fun `when ProductDto has unknown status, should map to UNKNOWN enum`() {
-        // Given
+
         val productDto = MockDataFactory.createProductDto().copy(status = "some_unknown_status")
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.status).isEqualTo(ProductStatus.UNKNOWN)
     }
 
     @Test
     fun `when ProductDto has null status, should map to UNKNOWN enum`() {
-        // Given
+
         val productDto = MockDataFactory.createProductDto().copy(status = null)
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.status).isEqualTo(ProductStatus.UNKNOWN)
     }
 
     @Test
     fun `when ProductDto has pictures, should map thumbnail and picture URLs correctly`() {
-        // Given
+
         val pictures = listOf(
             PictureDto(id = "pic1", url = "https://example.com/pic1.jpg"),
             PictureDto(id = "pic2", url = "https://example.com/pic2.jpg"),
             PictureDto(id = "pic3", url = null) // null URL should be filtered out
         )
         val productDto = MockDataFactory.createProductDto().copy(pictures = pictures)
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.thumbnailUrl).isEqualTo("https://example.com/pic1.jpg")
         assertThat(domainProduct.pictureUrls).hasSize(2)
         assertThat(domainProduct.pictureUrls).containsExactly(
@@ -101,33 +77,25 @@ class ProductMapperTest {
 
     @Test
     fun `when ProductDto has no pictures, should have null thumbnail and empty picture URLs`() {
-        // Given
+
         val productDto = MockDataFactory.createProductDto().copy(pictures = emptyList())
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.thumbnailUrl).isNull()
         assertThat(domainProduct.pictureUrls).isEmpty()
     }
 
     @Test
     fun `when ProductDto has null pictures, should handle gracefully`() {
-        // Given
+
         val productDto = MockDataFactory.createProductDto().copy(pictures = null)
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.thumbnailUrl).isNull()
         assertThat(domainProduct.pictureUrls).isEmpty()
     }
 
     @Test
     fun `when ProductDto has attributes, should map all attributes correctly`() {
-        // Given
+
         val attributes = listOf(
             AttributeDto(
                 id = "BRAND",
@@ -147,11 +115,7 @@ class ProductMapperTest {
             )
         )
         val productDto = MockDataFactory.createProductDto().copy(attributes = attributes)
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.attributes).hasSize(2)
         
         val brandAttribute = domainProduct.attributes[0]
@@ -169,19 +133,15 @@ class ProductMapperTest {
 
     @Test
     fun `when ProductDto has null attributes, should return empty attributes list`() {
-        // Given
+
         val productDto = MockDataFactory.createProductDto().copy(attributes = null)
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.attributes).isEmpty()
     }
 
     @Test
     fun `when ProductDto has buy_box_winner with complete data, should map BuyBoxInfo correctly`() {
-        // Given
+
         val buyBoxWinner = BuyBoxWinnerDto(
             item_id = "MLA123456789",
             category_id = "MLA1055",
@@ -191,11 +151,7 @@ class ProductMapperTest {
             shipping = ShippingDto(mode = "me2")
         )
         val productDto = MockDataFactory.createProductDto().copy(buy_box_winner = buyBoxWinner)
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.buyBox).isNotNull()
         assertThat(domainProduct.buyBox!!.price).isEqualTo(1299.99)
         assertThat(domainProduct.buyBox!!.currencyId).isEqualTo("USD")
@@ -204,7 +160,7 @@ class ProductMapperTest {
 
     @Test
     fun `when ProductDto has buy_box_winner with null price, should not map BuyBoxInfo`() {
-        // Given
+
         val buyBoxWinner = BuyBoxWinnerDto(
             item_id = "MLA123456789",
             category_id = "MLA1055",
@@ -214,17 +170,13 @@ class ProductMapperTest {
             shipping = ShippingDto(mode = "me2")
         )
         val productDto = MockDataFactory.createProductDto().copy(buy_box_winner = buyBoxWinner)
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.buyBox).isNull()
     }
 
     @Test
     fun `when ProductDto has buy_box_winner with null currency, should not map BuyBoxInfo`() {
-        // Given
+
         val buyBoxWinner = BuyBoxWinnerDto(
             item_id = "MLA123456789",
             category_id = "MLA1055",
@@ -234,96 +186,64 @@ class ProductMapperTest {
             shipping = ShippingDto(mode = "me2")
         )
         val productDto = MockDataFactory.createProductDto().copy(buy_box_winner = buyBoxWinner)
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.buyBox).isNull()
     }
 
     @Test
     fun `when ProductDto has children_ids, should set hasVariants to true`() {
-        // Given
+
         val productDto = MockDataFactory.createProductDto().copy(children_ids = listOf("child1", "child2"))
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.hasVariants).isTrue()
     }
 
     @Test
     fun `when ProductDto has no children_ids, should set hasVariants to false`() {
-        // Given
+
         val productDto = MockDataFactory.createProductDto().copy(children_ids = emptyList())
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.hasVariants).isFalse()
     }
 
     @Test
     fun `when ProductDto has null children_ids, should set hasVariants to false`() {
-        // Given
+
         val productDto = MockDataFactory.createProductDto().copy(children_ids = null)
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.hasVariants).isFalse()
     }
 
     @Test
     fun `when ProductDto has null name, should map to empty string`() {
-        // Given
+
         val productDto = MockDataFactory.createProductDto().copy(name = null)
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.name).isEmpty()
     }
 
     @Test
     fun `when ProductDto has blank permalink, should map to null`() {
-        // Given
+
         val productDto = MockDataFactory.createProductDto().copy(permalink = "")
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.permalink).isNull()
     }
 
     @Test
     fun `when ProductDto has blank short description, should map to null`() {
-        // Given
+
         val shortDescription = ShortDescriptionDto(type = "plain_text", content = "")
         val productDto = MockDataFactory.createProductDto().copy(short_description = shortDescription)
-
-        // When
         val domainProduct = productDto.toDomain()
-
-        // Then
         assertThat(domainProduct.shortDescription).isNull()
     }
 
     @Test
     fun `when SearchResponseDto is mapped, should convert all fields correctly`() {
-        // Given
+
         val searchResponseDto = MockDataFactory.createSearchResponseDto()
-
-        // When
         val domainResult = searchResponseDto.toDomain()
-
-        // Then
         assertThat(domainResult.products).hasSize(1)
         assertThat(domainResult.paging.total).isEqualTo(1000)
         assertThat(domainResult.paging.offset).isEqualTo(0)
@@ -334,17 +254,13 @@ class ProductMapperTest {
 
     @Test
     fun `when PagingDto is mapped, should convert all fields correctly`() {
-        // Given
+
         val pagingDto = MockDataFactory.createPagingDto(
             total = 500,
             offset = 20,
             limit = 25
         )
-
-        // When
         val domainPaging = pagingDto.toDomain()
-
-        // Then
         assertThat(domainPaging.total).isEqualTo(500)
         assertThat(domainPaging.offset).isEqualTo(20)
         assertThat(domainPaging.limit).isEqualTo(25)

@@ -15,14 +15,15 @@ fun AppLogo(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
+        modifier = modifier.fillMaxWidth()
     ) {
         Image(
             painter = painterResource(R.drawable.logo),
             contentDescription = "Findit Logo",
             contentScale = ContentScale.Fit,
-            modifier = Modifier.size(160.dp, 48.dp)
+            modifier = Modifier
+                .size(160.dp, 48.dp)
+                .align(Alignment.Center)
         )
     }
 }

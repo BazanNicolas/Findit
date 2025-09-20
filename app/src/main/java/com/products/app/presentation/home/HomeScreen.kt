@@ -125,13 +125,11 @@ private fun WelcomeHeader() {
         Text(
             text = buildAnnotatedString {
                 val welcomeText = stringResource(R.string.welcome_title)
-                val finditIndex = welcomeText.indexOf("Findit")
+                val findItIndex = welcomeText.indexOf("Findit")
                 
-                if (finditIndex != -1) {
-                    // Add text before "Findit"
-                    append(welcomeText.substring(0, finditIndex))
+                if (findItIndex != -1) {
+                    append(welcomeText.substring(0, findItIndex))
                     
-                    // Add "Findit" with primary color
                     withStyle(
                         style = androidx.compose.ui.text.SpanStyle(
                             color = MaterialTheme.colorScheme.primary,
@@ -141,8 +139,7 @@ private fun WelcomeHeader() {
                         append("Findit")
                     }
                     
-                    // Add remaining text after "Findit"
-                    append(welcomeText.substring(finditIndex + 6))
+                    append(welcomeText.substring(findItIndex + 6))
                 } else {
                     append(welcomeText)
                 }
@@ -562,7 +559,7 @@ private fun EmptyStateDecoration() {
                     .size(12.dp)
                     .background(
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                        shape = androidx.compose.foundation.shape.CircleShape
+                        shape = CircleShape
                     )
             )
             Box(
@@ -570,7 +567,7 @@ private fun EmptyStateDecoration() {
                     .size(8.dp)
                     .background(
                         color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
-                        shape = androidx.compose.foundation.shape.CircleShape
+                        shape = CircleShape
                     )
             )
             Box(
@@ -578,7 +575,7 @@ private fun EmptyStateDecoration() {
                     .size(10.dp)
                     .background(
                         color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.3f),
-                        shape = androidx.compose.foundation.shape.CircleShape
+                        shape = CircleShape
                     )
             )
         }

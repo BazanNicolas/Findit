@@ -40,7 +40,7 @@ class LoadMoreProductsUseCaseTest {
 
     @Test
     fun `when loading more products, should calculate correct next offset`() = runTest {
-        // Given
+
         val query = "iphone"
         val currentOffset = 20
         val limit = 10
@@ -51,11 +51,7 @@ class LoadMoreProductsUseCaseTest {
         )
         whenever(repository.search(query, expectedNextOffset, limit))
             .thenReturn(AppResult.Success(expectedResult))
-
-        // When
         val result = useCase(query, currentOffset, limit)
-
-        // Then
         val actualResult = result.assertSuccess()
         assertThat(actualResult.paging.offset).isEqualTo(expectedNextOffset)
         verify(repository).search(query, expectedNextOffset, limit)
@@ -63,7 +59,7 @@ class LoadMoreProductsUseCaseTest {
 
     @Test
     fun `when using default limit, should use pagination constant`() = runTest {
-        // Given
+
         val query = "samsung"
         val currentOffset = 0
         val expectedNextOffset = PaginationConstants.DEFAULT_PAGE_SIZE
@@ -73,34 +69,26 @@ class LoadMoreProductsUseCaseTest {
         )
         whenever(repository.search(query, expectedNextOffset, PaginationConstants.DEFAULT_PAGE_SIZE))
             .thenReturn(AppResult.Success(expectedResult))
-
-        // When
         val result = useCase(query, currentOffset, PaginationConstants.DEFAULT_PAGE_SIZE) // Using default limit
-
-        // Then
         result.assertSuccess()
         verify(repository).search(query, expectedNextOffset, PaginationConstants.DEFAULT_PAGE_SIZE)
     }
 
     @Test
     fun `when repository returns error, should return error result`() = runTest {
-        // Given
+
         val query = "test"
         val currentOffset = 10
         val limit = 5
         val errorMessage = "Network timeout"
         whenever(repository.search(query, 15, limit)).thenReturn(AppResult.Error(errorMessage))
-
-        // When
         val result = useCase(query, currentOffset, limit)
-
-        // Then
         result.assertError(errorMessage)
     }
 
     @Test
     fun `when loading first page with offset zero, should start from page size`() = runTest {
-        // Given
+
         val query = "laptop"
         val currentOffset = 0
         val limit = 20
@@ -111,18 +99,14 @@ class LoadMoreProductsUseCaseTest {
         )
         whenever(repository.search(query, expectedNextOffset, limit))
             .thenReturn(AppResult.Success(expectedResult))
-
-        // When
         val result = useCase(query, currentOffset, limit)
-
-        // Then
         val actualResult = result.assertSuccess()
         assertThat(actualResult.paging.offset).isEqualTo(expectedNextOffset)
     }
 
     @Test
     fun `when query has spaces, should trim query before calling repository`() = runTest {
-        // Given
+
         val queryWithSpaces = "  tablet  "
         val trimmedQuery = "tablet"
         val currentOffset = 30
@@ -131,18 +115,14 @@ class LoadMoreProductsUseCaseTest {
         val expectedResult = MockDataFactory.createProductSearchResult()
         whenever(repository.search(trimmedQuery, expectedNextOffset, limit))
             .thenReturn(AppResult.Success(expectedResult))
-
-        // When
         val result = useCase(queryWithSpaces, currentOffset, limit)
-
-        // Then
         result.assertSuccess()
         verify(repository).search(trimmedQuery, expectedNextOffset, limit)
     }
 
     @Test
     fun `when loading with large offset, should handle calculation correctly`() = runTest {
-        // Given
+
         val query = "phone"
         val currentOffset = 980
         val limit = 20
@@ -154,11 +134,7 @@ class LoadMoreProductsUseCaseTest {
         )
         whenever(repository.search(query, expectedNextOffset, limit))
             .thenReturn(AppResult.Success(expectedResult))
-
-        // When
         val result = useCase(query, currentOffset, limit)
-
-        // Then
         val actualResult = result.assertSuccess()
         assertThat(actualResult.products).isEmpty()
         assertThat(actualResult.paging.offset).isEqualTo(expectedNextOffset)

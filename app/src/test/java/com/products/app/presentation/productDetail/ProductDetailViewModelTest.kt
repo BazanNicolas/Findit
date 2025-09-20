@@ -58,15 +58,11 @@ class ProductDetailViewModelTest {
 
     @Test
     fun `when loading product detail succeeds, should update state with product and save viewed product`() = runTest {
-        // Given
+
         val productId = "MLA123456789"
         val productDetail = MockDataFactory.createProductDetail(id = productId)
         whenever(getProductDetailUseCase(productId)).thenReturn(Result.success(productDetail))
-
-        // When
         viewModel.loadProductDetail(productId)
-
-        // Then
         viewModel.uiState.test {
             val state = awaitItem()
             assertThat(state.isLoading).isFalse()
@@ -80,15 +76,11 @@ class ProductDetailViewModelTest {
 
     @Test
     fun `when loading product detail fails, should update state with error`() = runTest {
-        // Given
+
         val productId = "MLA999999999"
         val exception = Exception("Product not found")
         whenever(getProductDetailUseCase(productId)).thenReturn(Result.failure(exception))
-
-        // When
         viewModel.loadProductDetail(productId)
-
-        // Then
         viewModel.uiState.test {
             val state = awaitItem()
             assertThat(state.isLoading).isFalse()
@@ -102,15 +94,11 @@ class ProductDetailViewModelTest {
 
     @Test
     fun `when loading product detail with network error, should handle gracefully`() = runTest {
-        // Given
+
         val productId = "MLA123456789"
         val networkException = Exception("Network timeout")
         whenever(getProductDetailUseCase(productId)).thenReturn(Result.failure(networkException))
-
-        // When
         viewModel.loadProductDetail(productId)
-
-        // Then
         viewModel.uiState.test {
             val state = awaitItem()
             assertThat(state.isLoading).isFalse()
@@ -120,15 +108,11 @@ class ProductDetailViewModelTest {
 
     @Test
     fun `when loading product detail with null error message, should use default message`() = runTest {
-        // Given
+
         val productId = "MLA123456789"
         val exceptionWithoutMessage = RuntimeException()
         whenever(getProductDetailUseCase(productId)).thenReturn(Result.failure(exceptionWithoutMessage))
-
-        // When
         viewModel.loadProductDetail(productId)
-
-        // Then
         viewModel.uiState.test {
             val state = awaitItem()
             assertThat(state.error).isEqualTo("Unknown error")
@@ -137,15 +121,11 @@ class ProductDetailViewModelTest {
 
     @Test
     fun `when loading starts, should show loading state`() = runTest {
-        // Given
+
         val productId = "MLA123456789"
         val productDetail = MockDataFactory.createProductDetail(id = productId)
         whenever(getProductDetailUseCase(productId)).thenReturn(Result.success(productDetail))
-
-        // When
         viewModel.loadProductDetail(productId)
-
-        // Then - The loading state should be set to true initially
         // Note: Due to the fast execution in tests, we mainly verify the final state
         // but the implementation does set loading to true at the start
         verify(getProductDetailUseCase).invoke(productId)
@@ -153,7 +133,7 @@ class ProductDetailViewModelTest {
 
     @Test
     fun `when product detail is loaded successfully, should create and save correct Product model`() = runTest {
-        // Given
+
         val productId = "MLA987654321"
         val productName = "Samsung Galaxy S24 Ultra"
         val productDetail = MockDataFactory.createProductDetail(
@@ -161,11 +141,7 @@ class ProductDetailViewModelTest {
             name = productName
         )
         whenever(getProductDetailUseCase(productId)).thenReturn(Result.success(productDetail))
-
-        // When
         viewModel.loadProductDetail(productId)
-
-        // Then
         val productCaptor = argumentCaptor<com.products.app.domain.model.Product>()
         verify(saveViewedProductUseCase).invoke(productCaptor.capture())
         
@@ -183,17 +159,13 @@ class ProductDetailViewModelTest {
 
     @Test
     fun `when product detail has no pictures, should handle null thumbnail gracefully`() = runTest {
-        // Given
+
         val productId = "MLA111111111"
         val productDetail = MockDataFactory.createProductDetail(id = productId).copy(
             pictures = emptyList()
         )
         whenever(getProductDetailUseCase(productId)).thenReturn(Result.success(productDetail))
-
-        // When
         viewModel.loadProductDetail(productId)
-
-        // Then
         val productCaptor = argumentCaptor<com.products.app.domain.model.Product>()
         verify(saveViewedProductUseCase).invoke(productCaptor.capture())
         
@@ -204,7 +176,7 @@ class ProductDetailViewModelTest {
 
     @Test
     fun `when product detail has pictures, should map picture URLs correctly`() = runTest {
-        // Given
+
         val productId = "MLA222222222"
         val pictures = listOf(
             com.products.app.domain.model.ProductPicture(
@@ -230,11 +202,7 @@ class ProductDetailViewModelTest {
             pictures = pictures
         )
         whenever(getProductDetailUseCase(productId)).thenReturn(Result.success(productDetail))
-
-        // When
         viewModel.loadProductDetail(productId)
-
-        // Then
         val productCaptor = argumentCaptor<com.products.app.domain.model.Product>()
         verify(saveViewedProductUseCase).invoke(productCaptor.capture())
         
@@ -249,23 +217,19 @@ class ProductDetailViewModelTest {
 
     @Test
     fun `when loading product detail multiple times, should call use case each time`() = runTest {
-        // Given
+
         val productId = "MLA333333333"
         val productDetail = MockDataFactory.createProductDetail(id = productId)
         whenever(getProductDetailUseCase(productId)).thenReturn(Result.success(productDetail))
-
-        // When
         viewModel.loadProductDetail(productId)
         viewModel.loadProductDetail(productId)
-
-        // Then
         verify(getProductDetailUseCase, times(2)).invoke(productId)
         verify(saveViewedProductUseCase, times(2)).invoke(any())
     }
 
     @Test
     fun `when loading different products, should handle each correctly`() = runTest {
-        // Given
+
         val productId1 = "MLA111111111"
         val productId2 = "MLA222222222"
         val productDetail1 = MockDataFactory.createProductDetail(id = productId1, name = "Product 1")
@@ -273,12 +237,8 @@ class ProductDetailViewModelTest {
         
         whenever(getProductDetailUseCase(productId1)).thenReturn(Result.success(productDetail1))
         whenever(getProductDetailUseCase(productId2)).thenReturn(Result.success(productDetail2))
-
-        // When
         viewModel.loadProductDetail(productId1)
         viewModel.loadProductDetail(productId2)
-
-        // Then
         verify(getProductDetailUseCase).invoke(productId1)
         verify(getProductDetailUseCase).invoke(productId2)
         
@@ -291,15 +251,11 @@ class ProductDetailViewModelTest {
 
     @Test
     fun `when loading empty product id, should still call use case`() = runTest {
-        // Given
+
         val emptyProductId = ""
         val exception = Exception("Invalid product ID")
         whenever(getProductDetailUseCase(emptyProductId)).thenReturn(Result.failure(exception))
-
-        // When
         viewModel.loadProductDetail(emptyProductId)
-
-        // Then
         verify(getProductDetailUseCase).invoke(emptyProductId)
         
         viewModel.uiState.test {

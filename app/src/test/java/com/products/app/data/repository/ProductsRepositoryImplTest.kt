@@ -31,26 +31,25 @@ class ProductsRepositoryImplTest {
     @Mock
     private lateinit var api: ProductsApi
 
+    @Mock
+    private lateinit var errorHandler: com.products.app.core.NetworkErrorHandler
+
     private lateinit var repository: ProductsRepositoryImpl
 
     @Before
     fun setUp() {
-        repository = ProductsRepositoryImpl(api)
+        repository = ProductsRepositoryImpl(api, errorHandler)
     }
 
     @Test
     fun `when api returns success, should return mapped domain result`() = runTest {
-        // Given
+
         val query = "iphone"
         val offset = 0
         val limit = 10
         val apiResponse = MockDataFactory.createSearchResponseDto()
         whenever(api.searchProducts(query, "MLA", "active", offset, limit)).thenReturn(apiResponse)
-
-        // When
         val result = repository.search(query, offset, limit)
-
-        // Then
         val actualResult = result.assertSuccess()
         assertThat(actualResult.products).hasSize(1)
         assertThat(actualResult.paging.total).isEqualTo(1000)
@@ -61,54 +60,44 @@ class ProductsRepositoryImplTest {
 
     @Test
     fun `repository should be properly initialized`() = runTest {
-        // When & Then - Verify repository exists and is properly constructed
+
         assertThat(repository).isNotNull()
     }
 
     @Test
     fun `when api throws generic exception, should return error result with message`() = runTest {
-        // Given
+
         val query = "laptop"
         val offset = 20
         val limit = 5
         val exception = RuntimeException("Server error")
         whenever(api.searchProducts(query, "MLA", "active", offset, limit)).thenThrow(exception)
-
-        // When
+        whenever(errorHandler.handleError(exception)).thenReturn("Server error")
         val result = repository.search(query, offset, limit)
-
-        // Then
         result.assertError("Server error")
     }
 
     @Test
     fun `when api throws exception without message, should return unknown error`() = runTest {
-        // Given
+
         val query = "tablet"
         val exception = RuntimeException()
         whenever(api.searchProducts(query, "MLA", "active", 0, 10)).thenThrow(exception)
-
-        // When
+        whenever(errorHandler.handleError(exception)).thenReturn("Unknown error")
         val result = repository.search(query, 0, 10)
-
-        // Then
         result.assertError("Unknown error")
     }
 
     @Test
     fun `when api returns empty results, should return empty products list`() = runTest {
-        // Given
+
         val query = "nonexistentproduct"
         val emptyResponse = MockDataFactory.createSearchResponseDto(
             results = emptyList(),
             paging = MockDataFactory.createPagingDto(total = 0)
         )
         whenever(api.searchProducts(query, "MLA", "active", 0, 10)).thenReturn(emptyResponse)
-
-        // When
         val result = repository.search(query, 0, 10)
-
-        // Then
         val actualResult = result.assertSuccess()
         assertThat(actualResult.products).isEmpty()
         assertThat(actualResult.paging.total).isEqualTo(0)
@@ -116,7 +105,7 @@ class ProductsRepositoryImplTest {
 
     @Test
     fun `when api is called with different parameters, should pass them correctly`() = runTest {
-        // Given
+
         val query = "phone"
         val offset = 50
         val limit = 25
@@ -128,11 +117,7 @@ class ProductsRepositoryImplTest {
             )
         )
         whenever(api.searchProducts(query, "MLA", "active", offset, limit)).thenReturn(customResponse)
-
-        // When
         val result = repository.search(query, offset, limit)
-
-        // Then
         val actualResult = result.assertSuccess()
         assertThat(actualResult.paging.offset).isEqualTo(offset)
         assertThat(actualResult.paging.limit).isEqualTo(limit)
@@ -141,7 +126,7 @@ class ProductsRepositoryImplTest {
 
     @Test
     fun `when api returns multiple products, should map all products correctly`() = runTest {
-        // Given
+
         val query = "smartphone"
         val multipleProducts = listOf(
             MockDataFactory.createProductDto(id = "MLA111", name = "Product 1"),
@@ -153,11 +138,7 @@ class ProductsRepositoryImplTest {
             paging = MockDataFactory.createPagingDto(total = 3)
         )
         whenever(api.searchProducts(query, "MLA", "active", 0, 10)).thenReturn(response)
-
-        // When
         val result = repository.search(query, 0, 10)
-
-        // Then
         val actualResult = result.assertSuccess()
         assertThat(actualResult.products).hasSize(3)
         assertThat(actualResult.products[0].id).isEqualTo("MLA111")
@@ -167,15 +148,11 @@ class ProductsRepositoryImplTest {
 
     @Test
     fun `when query is empty, should still call api and return result`() = runTest {
-        // Given
+
         val emptyQuery = ""
         val response = MockDataFactory.createSearchResponseDto()
         whenever(api.searchProducts(emptyQuery, "MLA", "active", 0, 10)).thenReturn(response)
-
-        // When
         val result = repository.search(emptyQuery, 0, 10)
-
-        // Then
         result.assertSuccess()
         verify(api).searchProducts(emptyQuery, "MLA", "active", 0, 10)
     }

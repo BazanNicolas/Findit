@@ -71,5 +71,3 @@ fun <T> T?.assertNotNull(): T {
     assertThat(this).isNotNull()
     return this!!
 }
-
-

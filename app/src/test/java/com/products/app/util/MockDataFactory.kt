@@ -149,11 +149,12 @@ object MockDataFactory {
     
     fun createViewedProduct(
         productId: String = "MLA123456789",
-        productName: String = "iPhone 15 Pro Max"
+        productName: String = "iPhone 15 Pro Max",
+        thumbnailUrl: String? = "https://http2.mlstatic.com/D_NQ_NP_123456-MLA70381330133_072023-I.webp"
     ) = ViewedProduct(
         productId = productId,
         productName = productName,
-        thumbnailUrl = "https://http2.mlstatic.com/D_NQ_NP_123456-MLA70381330133_072023-I.webp",
+        thumbnailUrl = thumbnailUrl,
         timestamp = System.currentTimeMillis()
     )
     

@@ -59,12 +59,7 @@ fun ProductSearchScreen(
                     }
                 },
                 actions = {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        AppLogo()
-                    }
+                    AppLogo()
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
