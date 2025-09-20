@@ -1,9 +1,12 @@
 package com.products.app.domain.usecase
 
 import com.google.common.truth.Truth.assertThat
+import com.products.app.core.AppResult
 import com.products.app.domain.repository.ProductDetailRepository
 import com.products.app.util.MockDataFactory
 import com.products.app.util.TestCoroutineRule
+import com.products.app.util.assertSuccess
+import com.products.app.util.assertError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -39,12 +42,11 @@ class GetProductDetailUseCaseTest {
 
         val productId = "MLA123456789"
         val expectedProductDetail = MockDataFactory.createProductDetail(id = productId)
-        whenever(repository.getProductDetail(productId)).thenReturn(Result.success(expectedProductDetail))
+        whenever(repository.getProductDetail(productId)).thenReturn(AppResult.Success(expectedProductDetail))
         val result = useCase(productId)
-        assertThat(result.isSuccess).isTrue()
-        val actualProductDetail = result.getOrNull()
+        val actualProductDetail = result.assertSuccess()
         assertThat(actualProductDetail).isEqualTo(expectedProductDetail)
-        assertThat(actualProductDetail?.id).isEqualTo(productId)
+        assertThat(actualProductDetail.id).isEqualTo(productId)
         verify(repository).getProductDetail(productId)
     }
 
@@ -53,11 +55,9 @@ class GetProductDetailUseCaseTest {
 
         val productId = "MLA999999999"
         val exception = Exception("Product not found")
-        whenever(repository.getProductDetail(productId)).thenReturn(Result.failure(exception))
+        whenever(repository.getProductDetail(productId)).thenReturn(AppResult.Error("Product not found"))
         val result = useCase(productId)
-        assertThat(result.isFailure).isTrue()
-        val actualException = result.exceptionOrNull()
-        assertThat(actualException?.message).isEqualTo("Product not found")
+        val errorMessage = result.assertError("Product not found")
         verify(repository).getProductDetail(productId)
     }
 
@@ -66,11 +66,10 @@ class GetProductDetailUseCaseTest {
 
         val productId = "MLA123456789"
         val networkException = Exception("Network timeout")
-        whenever(repository.getProductDetail(productId)).thenReturn(Result.failure(networkException))
+        whenever(repository.getProductDetail(productId)).thenReturn(AppResult.Error("Network timeout"))
         val result = useCase(productId)
-        assertThat(result.isFailure).isTrue()
-        val actualException = result.exceptionOrNull()
-        assertThat(actualException?.message).contains("Network timeout")
+        val errorMessage = result.assertError()
+        assertThat(errorMessage).contains("Network timeout")
     }
 
     @Test
@@ -78,9 +77,9 @@ class GetProductDetailUseCaseTest {
 
         val emptyProductId = ""
         val exception = Exception("Invalid product ID")
-        whenever(repository.getProductDetail(emptyProductId)).thenReturn(Result.failure(exception))
+        whenever(repository.getProductDetail(emptyProductId)).thenReturn(AppResult.Error("Invalid product ID"))
         val result = useCase(emptyProductId)
-        assertThat(result.isFailure).isTrue()
+        val errorMessage = result.assertError("Invalid product ID")
         verify(repository).getProductDetail(emptyProductId)
     }
 
@@ -92,10 +91,9 @@ class GetProductDetailUseCaseTest {
             id = productId,
             name = "Samsung Galaxy S24 Ultra 512GB"
         )
-        whenever(repository.getProductDetail(productId)).thenReturn(Result.success(completeProductDetail))
+        whenever(repository.getProductDetail(productId)).thenReturn(AppResult.Success(completeProductDetail))
         val result = useCase(productId)
-        assertThat(result.isSuccess).isTrue()
-        val productDetail = result.getOrNull()!!
+        val productDetail = result.assertSuccess()!!
         assertThat(productDetail.id).isEqualTo(productId)
         assertThat(productDetail.name).isEqualTo("Samsung Galaxy S24 Ultra 512GB")
         assertThat(productDetail.pictures).isNotEmpty()
@@ -108,11 +106,11 @@ class GetProductDetailUseCaseTest {
 
         val productId = "MLA555555555"
         val productDetail = MockDataFactory.createProductDetail(id = productId)
-        whenever(repository.getProductDetail(productId)).thenReturn(Result.success(productDetail))
+        whenever(repository.getProductDetail(productId)).thenReturn(AppResult.Success(productDetail))
         val result1 = useCase(productId)
         val result2 = useCase(productId)
-        assertThat(result1.isSuccess).isTrue()
-        assertThat(result2.isSuccess).isTrue()
+        result1.assertSuccess()
+        result2.assertSuccess()
         verify(repository, org.mockito.kotlin.times(2)).getProductDetail(productId)
     }
 }

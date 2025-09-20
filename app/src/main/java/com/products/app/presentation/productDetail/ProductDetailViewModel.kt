@@ -2,6 +2,7 @@ package com.products.app.presentation.productDetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.products.app.core.AppResult
 import com.products.app.domain.usecase.GetProductDetailUseCase
 import com.products.app.domain.usecase.SaveViewedProductUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,8 +25,9 @@ class ProductDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             
-            getProductDetailUseCase(productId)
-                .onSuccess { productDetail ->
+            when (val result = getProductDetailUseCase(productId)) {
+                is AppResult.Success -> {
+                    val productDetail = result.data
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         productDetail = productDetail,
@@ -53,13 +55,14 @@ class ProductDetailViewModel @Inject constructor(
                     )
                     saveViewedProductUseCase(product)
                 }
-                .onFailure { exception ->
+                is AppResult.Error -> {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         productDetail = null,
-                        error = exception.message ?: "Unknown error"
+                        error = result.message
                     )
                 }
+            }
         }
     }
 }

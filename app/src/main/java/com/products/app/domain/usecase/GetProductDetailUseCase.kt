@@ -1,5 +1,6 @@
 package com.products.app.domain.usecase
 
+import com.products.app.core.AppResult
 import com.products.app.domain.model.ProductDetail
 import com.products.app.domain.repository.ProductDetailRepository
 import javax.inject.Inject
@@ -21,9 +22,9 @@ class GetProductDetailUseCase @Inject constructor(
      * Executes the get product detail operation with the given product ID.
      * 
      * @param productId The unique identifier of the product
-     * @return Result containing either the detailed product information or an error
+     * @return AppResult containing either the detailed product information or an error
      */
-    suspend operator fun invoke(productId: String): Result<ProductDetail> {
+    suspend operator fun invoke(productId: String): AppResult<ProductDetail> {
         return productDetailRepository.getProductDetail(productId)
     }
 }

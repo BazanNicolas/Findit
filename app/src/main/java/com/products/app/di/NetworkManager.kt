@@ -1,5 +1,6 @@
 package com.products.app.di
 
+import android.content.Context
 import com.products.app.core.NetworkErrorHandler
 import com.products.app.data.remote.AuthInterceptor
 import com.products.app.data.remote.AutosuggestApi
@@ -13,6 +14,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -24,6 +26,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    @Provides @Singleton
+    fun provideNetworkErrorHandler(@ApplicationContext context: Context): NetworkErrorHandler =
+        NetworkErrorHandler(context)
 
     @Provides @Singleton
     fun provideMoshi(): Moshi = Moshi.Builder()

@@ -25,6 +25,23 @@
     <string name="error_getting_suggestions">Error al obtener sugerencias</string>
     <string name="retry">Reintentar</string>
     
+    <!-- Network Error Messages -->
+    <string name="network_error_no_internet">Sin conexión a internet. Por favor verifica tu configuración de red.</string>
+    <string name="network_error_connection">Error de red. Por favor verifica tu conexión e intenta de nuevo.</string>
+    <string name="network_error_permission">Permiso denegado. Por favor verifica los permisos de la aplicación.</string>
+    <string name="network_error_unexpected">Ocurrió un error inesperado. Por favor intenta de nuevo.</string>
+    <string name="network_error_invalid_request">Solicitud inválida. Por favor verifica tu entrada e intenta de nuevo.</string>
+    <string name="network_error_auth_failed">Autenticación fallida. Por favor intenta de nuevo.</string>
+    <string name="network_error_access_denied">Acceso denegado. No tienes permisos para acceder a este recurso.</string>
+    <string name="network_error_not_found">El recurso solicitado no fue encontrado.</string>
+    <string name="network_error_timeout">Tiempo de espera agotado. Por favor intenta de nuevo.</string>
+    <string name="network_error_too_many_requests">Demasiadas solicitudes. Por favor espera un momento e intenta de nuevo.</string>
+    <string name="network_error_server_error">Error del servidor. Por favor intenta más tarde.</string>
+    <string name="network_error_bad_gateway">Puerta de enlace incorrecta. El servidor está temporalmente no disponible.</string>
+    <string name="network_error_service_unavailable">Servicio no disponible. Por favor intenta más tarde.</string>
+    <string name="network_error_gateway_timeout">Tiempo de espera de puerta de enlace. Por favor intenta de nuevo.</string>
+    <string name="network_error_generic">Error de red (%1$d). Por favor intenta de nuevo.</string>
+    
     <!-- Loading States -->
     <string name="loading">Cargando...</string>
     

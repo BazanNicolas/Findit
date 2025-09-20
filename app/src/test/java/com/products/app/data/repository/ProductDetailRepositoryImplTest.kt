@@ -5,6 +5,8 @@ import com.products.app.core.NetworkErrorHandler
 import com.products.app.data.remote.ProductsApi
 import com.products.app.data.remote.dto.ProductDetailDto
 import com.products.app.util.TestCoroutineRule
+import com.products.app.util.assertSuccess
+import com.products.app.util.assertError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -77,8 +79,7 @@ class ProductDetailRepositoryImplTest {
         )
         whenever(productsApi.getProductDetail(productId)).thenReturn(apiResponse)
         val result = repository.getProductDetail(productId)
-        assertThat(result.isSuccess).isTrue()
-        val productDetail = result.getOrThrow()
+        val productDetail = result.assertSuccess()
         assertThat(productDetail.id).isEqualTo(productId)
         assertThat(productDetail.name).isEqualTo("iPhone 15 Pro Max")
         assertThat(productDetail.status).isEqualTo("active")
@@ -96,10 +97,7 @@ class ProductDetailRepositoryImplTest {
         doThrow(exception).whenever(productsApi).getProductDetail(productId)
         whenever(errorHandler.handleError(exception)).thenReturn("Network error")
         val result = repository.getProductDetail(productId)
-        assertThat(result.isFailure).isTrue()
-        val exceptionResult = result.exceptionOrNull()
-        assertThat(exceptionResult).isNotNull()
-        assertThat(exceptionResult?.message).isEqualTo("Network error")
+        val errorMessage = result.assertError("Network error")
         
         verify(productsApi).getProductDetail(productId)
         verify(errorHandler).handleError(exception)
@@ -113,10 +111,7 @@ class ProductDetailRepositoryImplTest {
         doThrow(exception).whenever(productsApi).getProductDetail(productId)
         whenever(errorHandler.handleError(exception)).thenReturn("Server error")
         val result = repository.getProductDetail(productId)
-        assertThat(result.isFailure).isTrue()
-        val exceptionResult = result.exceptionOrNull()
-        assertThat(exceptionResult).isNotNull()
-        assertThat(exceptionResult?.message).isEqualTo("Server error")
+        val errorMessage = result.assertError("Server error")
         
         verify(productsApi).getProductDetail(productId)
         verify(errorHandler).handleError(exception)
@@ -130,10 +125,7 @@ class ProductDetailRepositoryImplTest {
         doThrow(exception).whenever(productsApi).getProductDetail(productId)
         whenever(errorHandler.handleError(exception)).thenReturn("Unknown error")
         val result = repository.getProductDetail(productId)
-        assertThat(result.isFailure).isTrue()
-        val exceptionResult = result.exceptionOrNull()
-        assertThat(exceptionResult).isNotNull()
-        assertThat(exceptionResult?.message).isEqualTo("Unknown error")
+        val errorMessage = result.assertError("Unknown error")
         
         verify(productsApi).getProductDetail(productId)
         verify(errorHandler).handleError(exception)
@@ -178,8 +170,7 @@ class ProductDetailRepositoryImplTest {
         )
         whenever(productsApi.getProductDetail(productId)).thenReturn(apiResponse)
         val result = repository.getProductDetail(productId)
-        assertThat(result.isSuccess).isTrue()
-        val productDetail = result.getOrThrow()
+        val productDetail = result.assertSuccess()
         assertThat(productDetail.id).isEqualTo(productId)
         assertThat(productDetail.catalogProductId).isEmpty()
         assertThat(productDetail.status).isEmpty()
@@ -225,8 +216,7 @@ class ProductDetailRepositoryImplTest {
         )
         whenever(productsApi.getProductDetail(productId)).thenReturn(apiResponse)
         val result = repository.getProductDetail(productId)
-        assertThat(result.isSuccess).isTrue()
-        val productDetail = result.getOrThrow()
+        val productDetail = result.assertSuccess()
         assertThat(productDetail.id).isEqualTo(productId)
         assertThat(productDetail.pdpTypes).isEmpty()
         assertThat(productDetail.pickers).isEmpty()
@@ -247,7 +237,7 @@ class ProductDetailRepositoryImplTest {
         doThrow(exception).whenever(productsApi).getProductDetail(emptyProductId)
         whenever(errorHandler.handleError(exception)).thenReturn("Invalid product ID")
         val result = repository.getProductDetail(emptyProductId)
-        assertThat(result.isFailure).isTrue()
+        val errorMessage = result.assertError("Invalid product ID")
         verify(productsApi).getProductDetail(emptyProductId)
         verify(errorHandler).handleError(exception)
     }
@@ -419,8 +409,7 @@ class ProductDetailRepositoryImplTest {
         )
         whenever(productsApi.getProductDetail(productId)).thenReturn(apiResponse)
         val result = repository.getProductDetail(productId)
-        assertThat(result.isSuccess).isTrue()
-        val productDetail = result.getOrThrow()
+        val productDetail = result.assertSuccess()
         assertThat(productDetail.id).isEqualTo(productId)
         assertThat(productDetail.pdpTypes).isEqualTo(listOf("regular", "premium"))
         assertThat(productDetail.childrenIds).isEqualTo(listOf("child1", "child2"))

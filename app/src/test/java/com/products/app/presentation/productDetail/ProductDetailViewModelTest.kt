@@ -3,6 +3,7 @@ package com.products.app.presentation.productDetail
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.products.app.core.AppResult
 import com.products.app.domain.usecase.GetProductDetailUseCase
 import com.products.app.domain.usecase.SaveViewedProductUseCase
 import com.products.app.util.MockDataFactory
@@ -61,7 +62,7 @@ class ProductDetailViewModelTest {
 
         val productId = "MLA123456789"
         val productDetail = MockDataFactory.createProductDetail(id = productId)
-        whenever(getProductDetailUseCase(productId)).thenReturn(Result.success(productDetail))
+        whenever(getProductDetailUseCase(productId)).thenReturn(AppResult.Success(productDetail))
         viewModel.loadProductDetail(productId)
         viewModel.uiState.test {
             val state = awaitItem()
@@ -79,7 +80,7 @@ class ProductDetailViewModelTest {
 
         val productId = "MLA999999999"
         val exception = Exception("Product not found")
-        whenever(getProductDetailUseCase(productId)).thenReturn(Result.failure(exception))
+        whenever(getProductDetailUseCase(productId)).thenReturn(AppResult.Error("Product not found"))
         viewModel.loadProductDetail(productId)
         viewModel.uiState.test {
             val state = awaitItem()
@@ -97,7 +98,7 @@ class ProductDetailViewModelTest {
 
         val productId = "MLA123456789"
         val networkException = Exception("Network timeout")
-        whenever(getProductDetailUseCase(productId)).thenReturn(Result.failure(networkException))
+        whenever(getProductDetailUseCase(productId)).thenReturn(AppResult.Error("Network timeout"))
         viewModel.loadProductDetail(productId)
         viewModel.uiState.test {
             val state = awaitItem()
@@ -111,7 +112,7 @@ class ProductDetailViewModelTest {
 
         val productId = "MLA123456789"
         val exceptionWithoutMessage = RuntimeException()
-        whenever(getProductDetailUseCase(productId)).thenReturn(Result.failure(exceptionWithoutMessage))
+        whenever(getProductDetailUseCase(productId)).thenReturn(AppResult.Error("Unknown error"))
         viewModel.loadProductDetail(productId)
         viewModel.uiState.test {
             val state = awaitItem()
@@ -124,7 +125,7 @@ class ProductDetailViewModelTest {
 
         val productId = "MLA123456789"
         val productDetail = MockDataFactory.createProductDetail(id = productId)
-        whenever(getProductDetailUseCase(productId)).thenReturn(Result.success(productDetail))
+        whenever(getProductDetailUseCase(productId)).thenReturn(AppResult.Success(productDetail))
         viewModel.loadProductDetail(productId)
         // Note: Due to the fast execution in tests, we mainly verify the final state
         // but the implementation does set loading to true at the start
@@ -140,7 +141,7 @@ class ProductDetailViewModelTest {
             id = productId,
             name = productName
         )
-        whenever(getProductDetailUseCase(productId)).thenReturn(Result.success(productDetail))
+        whenever(getProductDetailUseCase(productId)).thenReturn(AppResult.Success(productDetail))
         viewModel.loadProductDetail(productId)
         val productCaptor = argumentCaptor<com.products.app.domain.model.Product>()
         verify(saveViewedProductUseCase).invoke(productCaptor.capture())
@@ -164,7 +165,7 @@ class ProductDetailViewModelTest {
         val productDetail = MockDataFactory.createProductDetail(id = productId).copy(
             pictures = emptyList()
         )
-        whenever(getProductDetailUseCase(productId)).thenReturn(Result.success(productDetail))
+        whenever(getProductDetailUseCase(productId)).thenReturn(AppResult.Success(productDetail))
         viewModel.loadProductDetail(productId)
         val productCaptor = argumentCaptor<com.products.app.domain.model.Product>()
         verify(saveViewedProductUseCase).invoke(productCaptor.capture())
@@ -201,7 +202,7 @@ class ProductDetailViewModelTest {
         val productDetail = MockDataFactory.createProductDetail(id = productId).copy(
             pictures = pictures
         )
-        whenever(getProductDetailUseCase(productId)).thenReturn(Result.success(productDetail))
+        whenever(getProductDetailUseCase(productId)).thenReturn(AppResult.Success(productDetail))
         viewModel.loadProductDetail(productId)
         val productCaptor = argumentCaptor<com.products.app.domain.model.Product>()
         verify(saveViewedProductUseCase).invoke(productCaptor.capture())
@@ -220,7 +221,7 @@ class ProductDetailViewModelTest {
 
         val productId = "MLA333333333"
         val productDetail = MockDataFactory.createProductDetail(id = productId)
-        whenever(getProductDetailUseCase(productId)).thenReturn(Result.success(productDetail))
+        whenever(getProductDetailUseCase(productId)).thenReturn(AppResult.Success(productDetail))
         viewModel.loadProductDetail(productId)
         viewModel.loadProductDetail(productId)
         verify(getProductDetailUseCase, times(2)).invoke(productId)
@@ -235,8 +236,8 @@ class ProductDetailViewModelTest {
         val productDetail1 = MockDataFactory.createProductDetail(id = productId1, name = "Product 1")
         val productDetail2 = MockDataFactory.createProductDetail(id = productId2, name = "Product 2")
         
-        whenever(getProductDetailUseCase(productId1)).thenReturn(Result.success(productDetail1))
-        whenever(getProductDetailUseCase(productId2)).thenReturn(Result.success(productDetail2))
+        whenever(getProductDetailUseCase(productId1)).thenReturn(AppResult.Success(productDetail1))
+        whenever(getProductDetailUseCase(productId2)).thenReturn(AppResult.Success(productDetail2))
         viewModel.loadProductDetail(productId1)
         viewModel.loadProductDetail(productId2)
         verify(getProductDetailUseCase).invoke(productId1)
@@ -254,7 +255,7 @@ class ProductDetailViewModelTest {
 
         val emptyProductId = ""
         val exception = Exception("Invalid product ID")
-        whenever(getProductDetailUseCase(emptyProductId)).thenReturn(Result.failure(exception))
+        whenever(getProductDetailUseCase(emptyProductId)).thenReturn(AppResult.Error("Invalid product ID"))
         viewModel.loadProductDetail(emptyProductId)
         verify(getProductDetailUseCase).invoke(emptyProductId)
         

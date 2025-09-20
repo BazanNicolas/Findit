@@ -1,5 +1,7 @@
 package com.products.app.core
 
+import android.content.Context
+import com.products.app.R
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.UnknownHostException
@@ -18,7 +20,9 @@ import javax.inject.Singleton
  * helping users understand what went wrong and how to potentially fix it.
  */
 @Singleton
-class NetworkErrorHandler @Inject constructor() {
+class NetworkErrorHandler @Inject constructor(
+    private val context: Context
+) {
     
     /**
      * Converts a throwable into a user-friendly error message.
@@ -33,10 +37,10 @@ class NetworkErrorHandler @Inject constructor() {
     fun handleError(throwable: Throwable): String {
         return when (throwable) {
             is HttpException -> handleHttpException(throwable)
-            is UnknownHostException -> "No internet connection. Please check your network settings."
-            is IOException -> "Network error. Please check your connection and try again."
-            is SecurityException -> "Permission denied. Please check app permissions."
-            else -> throwable.message ?: "An unexpected error occurred. Please try again."
+            is UnknownHostException -> context.getString(R.string.network_error_no_internet)
+            is IOException -> context.getString(R.string.network_error_connection)
+            is SecurityException -> context.getString(R.string.network_error_permission)
+            else -> throwable.message ?: context.getString(R.string.network_error_unexpected)
         }
     }
     
@@ -51,55 +55,17 @@ class NetworkErrorHandler @Inject constructor() {
      */
     private fun handleHttpException(httpException: HttpException): String {
         return when (httpException.code()) {
-            400 -> "Invalid request. Please check your input and try again."
-            401 -> "Authentication failed. Please try again."
-            403 -> "Access denied. You don't have permission to access this resource."
-            404 -> "The requested resource was not found."
-            408 -> "Request timeout. Please try again."
-            429 -> "Too many requests. Please wait a moment and try again."
-            500 -> "Server error. Please try again later."
-            502 -> "Bad gateway. The server is temporarily unavailable."
-            503 -> "Service unavailable. Please try again later."
-            504 -> "Gateway timeout. Please try again."
-            else -> "Network error (${httpException.code()}). Please try again."
-        }
-    }
-    
-    /**
-     * Determines if the given throwable represents a network-related error.
-     * 
-     * This method is useful for distinguishing between network errors and
-     * other types of errors (like business logic errors) for different
-     * handling strategies.
-     * 
-     * @param throwable The exception to check
-     * @return true if the error is network-related, false otherwise
-     */
-    fun isNetworkError(throwable: Throwable): Boolean {
-        return when (throwable) {
-            is HttpException -> true
-            is UnknownHostException -> true
-            is IOException -> true
-            else -> false
-        }
-    }
-    
-    /**
-     * Determines if the given error is retryable.
-     * 
-     * Some errors (like temporary network issues or server overload)
-     * can be retried, while others (like authentication failures)
-     * should not be retried automatically.
-     * 
-     * @param throwable The exception to check
-     * @return true if the error can be retried, false otherwise
-     */
-    fun isRetryableError(throwable: Throwable): Boolean {
-        return when (throwable) {
-            is HttpException -> throwable.code() in listOf(408, 429, 500, 502, 503, 504)
-            is UnknownHostException -> true
-            is IOException -> true
-            else -> false
+            400 -> context.getString(R.string.network_error_invalid_request)
+            401 -> context.getString(R.string.network_error_auth_failed)
+            403 -> context.getString(R.string.network_error_access_denied)
+            404 -> context.getString(R.string.network_error_not_found)
+            408 -> context.getString(R.string.network_error_timeout)
+            429 -> context.getString(R.string.network_error_too_many_requests)
+            500 -> context.getString(R.string.network_error_server_error)
+            502 -> context.getString(R.string.network_error_bad_gateway)
+            503 -> context.getString(R.string.network_error_service_unavailable)
+            504 -> context.getString(R.string.network_error_gateway_timeout)
+            else -> context.getString(R.string.network_error_generic, httpException.code())
         }
     }
 }
