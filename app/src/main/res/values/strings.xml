@@ -46,6 +46,7 @@
     
     <!-- Search History -->
     <string name="recent_searches">Recent searches</string>
+    <string name="suggestions">Suggestions</string>
     <string name="clear_history">Clear history</string>
     <string name="time_now">now</string>
     <string name="time_minutes">m</string>
@@ -65,4 +66,5 @@
     <string name="icon_check">✓</string>
     <string name="complete_text">Complete text</string>
     <string name="what_are_you_looking_for">What are you looking for?</string>
+    <string name="product_placeholder">Product</string>
 </resources>

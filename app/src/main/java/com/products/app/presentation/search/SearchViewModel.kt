@@ -1,4 +1,4 @@
-package com.products.app.presentation.home
+package com.products.app.presentation.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class SearchViewModel @Inject constructor(
     private val getRecentSearchesUseCase: GetRecentSearchesUseCase,
     private val getMatchingSearchesUseCase: GetMatchingSearchesUseCase,
     private val getAutosuggestUseCase: GetAutosuggestUseCase,
@@ -18,8 +18,8 @@ class HomeViewModel @Inject constructor(
     private val saveSearchUseCase: SaveSearchUseCase
 ) : ViewModel() {
     
-    private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(SearchUiState())
+    val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
     
     init {
         loadInitialData()
@@ -28,12 +28,13 @@ class HomeViewModel @Inject constructor(
     private fun loadInitialData() {
         viewModelScope.launch {
             combine(
-                getRecentSearchesUseCase(5),
-                getRecentViewedProductsUseCase(6)
+                getRecentSearchesUseCase(10),
+                getRecentViewedProductsUseCase(10)
             ) { recentSearches, recentViewedProducts ->
                 _uiState.value = _uiState.value.copy(
-                    recentSearches = recentSearches,
-                    recentViewedProducts = recentViewedProducts
+                    searchHistory = recentSearches,
+                    recentViewedProducts = recentViewedProducts,
+                    showSearchHistory = recentSearches.isNotEmpty()
                 )
             }.collect()
         }
@@ -54,7 +55,7 @@ class HomeViewModel @Inject constructor(
     
     private fun loadRecentHistory() {
         viewModelScope.launch {
-            getRecentSearchesUseCase(5)
+            getRecentSearchesUseCase(10)
                 .onEach { history ->
                     _uiState.value = _uiState.value.copy(
                         searchHistory = history,
@@ -96,7 +97,8 @@ class HomeViewModel @Inject constructor(
                 is com.products.app.core.AppResult.Error -> {
                     _uiState.value = _uiState.value.copy(
                         loadingSuggestions = false,
-                        showSuggestions = false
+                        showSuggestions = false,
+                        error = result.message
                     )
                 }
             }
@@ -117,17 +119,13 @@ class HomeViewModel @Inject constructor(
         )
     }
     
-    fun hideSuggestions() {
+    fun clearSearch() {
         _uiState.value = _uiState.value.copy(
+            searchQuery = "",
             showSuggestions = false,
             showSearchHistory = false
         )
-    }
-    
-    fun showSearchHistory() {
-        if (_uiState.value.searchQuery.isBlank()) {
-            loadRecentHistory()
-        }
+        loadRecentHistory()
     }
     
     fun onSearchClick() {
@@ -139,12 +137,7 @@ class HomeViewModel @Inject constructor(
         }
     }
     
-    fun clearSearch() {
-        _uiState.value = _uiState.value.copy(
-            searchQuery = "",
-            showSuggestions = false,
-            showSearchHistory = false
-        )
-        loadRecentHistory()
+    fun clearError() {
+        _uiState.value = _uiState.value.copy(error = null)
     }
 }

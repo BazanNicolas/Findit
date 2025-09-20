@@ -24,8 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.ui.unit.dp
 import com.products.app.R
-import com.products.app.presentation.common.components.AutosuggestDropdown
 import com.products.app.presentation.common.components.ViewedProductCard
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
@@ -34,6 +34,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 fun HomeScreen(
     onSearchClick: (String) -> Unit,
     onProductClick: (String) -> Unit,
+    onNavigateToSearch: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -41,7 +42,6 @@ fun HomeScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Background gradient
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -70,15 +70,7 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(32.dp))
                 
                 SearchSection(
-                    searchQuery = uiState.searchQuery,
-                    onQueryChange = viewModel::onQueryChange,
-                    onSearchClick = {
-                        viewModel.onSearchClick()
-                        onSearchClick(uiState.searchQuery)
-                    },
-                    showSuggestions = uiState.showSuggestions,
-                    showSearchHistory = uiState.showSearchHistory,
-                    onHideSuggestions = viewModel::hideSuggestions
+                    onNavigateToSearch = onNavigateToSearch
                 )
                 
                 if (uiState.recentSearches.isNotEmpty() || uiState.recentViewedProducts.isNotEmpty()) {
@@ -89,58 +81,6 @@ fun HomeScreen(
                         recentViewedProducts = uiState.recentViewedProducts,
                         onSearchClick = onSearchClick,
                         onProductClick = onProductClick
-                    )
-                }
-            }
-            
-            // Dropdown overlay positioned absolutely
-            if (uiState.showSuggestions || uiState.showSearchHistory) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable { viewModel.hideSuggestions() } // Close dropdown when clicking outside
-                ) {
-                    AutosuggestDropdown(
-                        suggestions = uiState.suggestions,
-                        loadingSuggestions = uiState.loadingSuggestions,
-                        searchHistory = uiState.searchHistory,
-                        onSuggestionClick = { query -> 
-                            val suggestion = uiState.suggestions.find { it.query == query }
-                            suggestion?.let { 
-                                viewModel.onSuggestionClick(it)
-                                viewModel.onSearchClick()
-                                onSearchClick(uiState.searchQuery)
-                                viewModel.hideSuggestions()
-                            }
-                        },
-                        onHistoryClick = { query ->
-                            val history = uiState.searchHistory.find { it.query == query }
-                            history?.let { 
-                                viewModel.onHistoryClick(it)
-                                viewModel.onSearchClick()
-                                onSearchClick(uiState.searchQuery)
-                                viewModel.hideSuggestions()
-                            }
-                        },
-                        onSuggestionComplete = { query ->
-                            val suggestion = uiState.suggestions.find { it.query == query }
-                            suggestion?.let { 
-                                viewModel.onSuggestionClick(it)
-                                viewModel.hideSuggestions()
-                            }
-                        },
-                        onHistoryComplete = { query ->
-                            val history = uiState.searchHistory.find { it.query == query }
-                            history?.let { 
-                                viewModel.onHistoryClick(it)
-                                viewModel.hideSuggestions()
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
-                            .offset(y = 120.dp) // Position closer to search field
-                            .clickable { } // Prevent click propagation to background
                     )
                 }
             }
@@ -175,17 +115,11 @@ private fun WelcomeHeader() {
 
 @Composable
 private fun SearchSection(
-    searchQuery: String,
-    onQueryChange: (String) -> Unit,
-    onSearchClick: () -> Unit,
-    showSuggestions: Boolean,
-    showSearchHistory: Boolean,
-    onHideSuggestions: () -> Unit
+    onNavigateToSearch: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        // Search container with elevation
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
@@ -206,26 +140,18 @@ private fun SearchSection(
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = onQueryChange,
-                    placeholder = { Text(stringResource(R.string.search_placeholder)) },
-                    trailingIcon = {
-                        if (showSuggestions || showSearchHistory) {
-                            // Show close button when dropdown is visible
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onNavigateToSearch() }
+                ) {
+                    OutlinedTextField(
+                        value = "",
+                        onValueChange = { },
+                        placeholder = { Text(stringResource(R.string.search_placeholder)) },
+                        trailingIcon = {
                             IconButton(
-                                onClick = onHideSuggestions
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = stringResource(R.string.close),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        } else if (searchQuery.isNotBlank()) {
-                            // Show search button when there's text
-                            IconButton(
-                                onClick = onSearchClick
+                                onClick = onNavigateToSearch
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Search,
@@ -233,22 +159,21 @@ private fun SearchSection(
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    shape = RoundedCornerShape(6.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                    ),
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                        imeAction = androidx.compose.ui.text.input.ImeAction.Search
-                    ),
-                    keyboardActions = androidx.compose.foundation.text.KeyboardActions(
-                        onSearch = { onSearchClick() }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(6.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                            disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                            disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
+                        readOnly = true, // Make it read-only so it only triggers navigation
+                        enabled = false // Disable to prevent focus
                     )
-                )
+                }
             }
         }
     }

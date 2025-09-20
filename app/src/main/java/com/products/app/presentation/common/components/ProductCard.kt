@@ -52,7 +52,6 @@ fun ProductCard(
         label = "cardScale"
     )
     
-    // Use thumbnail or fallback to first picture URL
     val imageUrl = product.thumbnailUrl?.takeIf { it.isNotBlank() } 
         ?: product.pictureUrls.firstOrNull()
     

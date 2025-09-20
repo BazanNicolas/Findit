@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import com.products.app.presentation.home.HomeScreen
 import com.products.app.presentation.productDetail.ProductDetailScreen
 import com.products.app.presentation.productSearch.ProductSearchScreen
+import com.products.app.presentation.search.SearchScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,6 +31,23 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable("home") {
                         HomeScreen(
+                            onSearchClick = { query ->
+                                navController.navigate("product_search/$query")
+                            },
+                            onProductClick = { productId ->
+                                navController.navigate("product_detail/$productId")
+                            },
+                            onNavigateToSearch = {
+                                navController.navigate("search")
+                            }
+                        )
+                    }
+                    
+                    composable("search") {
+                        SearchScreen(
+                            onBackClick = {
+                                navController.popBackStack()
+                            },
                             onSearchClick = { query ->
                                 navController.navigate("product_search/$query")
                             },

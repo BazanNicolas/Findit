@@ -216,7 +216,6 @@ private fun ProductImageGallery(
                             .build()
                     }
                     
-                    // White background to match image content
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
