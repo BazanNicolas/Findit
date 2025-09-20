@@ -67,4 +67,6 @@
     <string name="complete_text">Completar texto</string>
     <string name="what_are_you_looking_for">¿Qué estás buscando?</string>
     <string name="product_placeholder">Producto</string>
+    <string name="delete">Eliminar</string>
+    <string name="clear_all">Limpiar todo</string>
 </resources>

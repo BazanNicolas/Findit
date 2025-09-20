@@ -47,6 +47,18 @@ class HomeViewModelTest {
     @Mock
     private lateinit var saveSearchUseCase: SaveSearchUseCase
 
+    @Mock
+    private lateinit var deleteSearchUseCase: DeleteSearchUseCase
+
+    @Mock
+    private lateinit var clearAllSearchesUseCase: ClearAllSearchesUseCase
+
+    @Mock
+    private lateinit var deleteViewedProductUseCase: DeleteViewedProductUseCase
+
+    @Mock
+    private lateinit var clearAllViewedProductsUseCase: ClearAllViewedProductsUseCase
+
     private lateinit var viewModel: HomeViewModel
 
     @Before
@@ -60,7 +72,11 @@ class HomeViewModelTest {
             getMatchingSearchesUseCase = getMatchingSearchesUseCase,
             getAutosuggestUseCase = getAutosuggestUseCase,
             getRecentViewedProductsUseCase = getRecentViewedProductsUseCase,
-            saveSearchUseCase = saveSearchUseCase
+            saveSearchUseCase = saveSearchUseCase,
+            deleteSearchUseCase = deleteSearchUseCase,
+            clearAllSearchesUseCase = clearAllSearchesUseCase,
+            deleteViewedProductUseCase = deleteViewedProductUseCase,
+            clearAllViewedProductsUseCase = clearAllViewedProductsUseCase
         )
     }
 
@@ -97,7 +113,11 @@ class HomeViewModelTest {
             getMatchingSearchesUseCase = getMatchingSearchesUseCase,
             getAutosuggestUseCase = getAutosuggestUseCase,
             getRecentViewedProductsUseCase = getRecentViewedProductsUseCase,
-            saveSearchUseCase = saveSearchUseCase
+            saveSearchUseCase = saveSearchUseCase,
+            deleteSearchUseCase = deleteSearchUseCase,
+            clearAllSearchesUseCase = clearAllSearchesUseCase,
+            deleteViewedProductUseCase = deleteViewedProductUseCase,
+            clearAllViewedProductsUseCase = clearAllViewedProductsUseCase
         )
 
         // Then
@@ -326,7 +346,11 @@ class HomeViewModelTest {
             getMatchingSearchesUseCase = getMatchingSearchesUseCase,
             getAutosuggestUseCase = getAutosuggestUseCase,
             getRecentViewedProductsUseCase = getRecentViewedProductsUseCase,
-            saveSearchUseCase = saveSearchUseCase
+            saveSearchUseCase = saveSearchUseCase,
+            deleteSearchUseCase = deleteSearchUseCase,
+            clearAllSearchesUseCase = clearAllSearchesUseCase,
+            deleteViewedProductUseCase = deleteViewedProductUseCase,
+            clearAllViewedProductsUseCase = clearAllViewedProductsUseCase
         )
 
         // Then - Just verify the ViewModel was created and use cases were called

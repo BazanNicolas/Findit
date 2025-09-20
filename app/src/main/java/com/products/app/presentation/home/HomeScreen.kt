@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.filled.Delete
 import com.products.app.R
 import com.products.app.presentation.common.components.ViewedProductCard
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -80,7 +80,11 @@ fun HomeScreen(
                         recentSearches = uiState.recentSearches,
                         recentViewedProducts = uiState.recentViewedProducts,
                         onSearchClick = onSearchClick,
-                        onProductClick = onProductClick
+                        onProductClick = onProductClick,
+                        onDeleteSearch = { search -> viewModel.deleteSearch(search) },
+                        onClearAllSearches = { viewModel.clearAllSearches() },
+                        onDeleteViewedProduct = { product -> viewModel.deleteViewedProduct(product) },
+                        onClearAllViewedProducts = { viewModel.clearAllViewedProducts() }
                     )
                 }
             }
@@ -184,7 +188,11 @@ private fun ContentSections(
     recentSearches: List<com.products.app.domain.model.SearchHistory>,
     recentViewedProducts: List<com.products.app.domain.model.ViewedProduct>,
     onSearchClick: (String) -> Unit,
-    onProductClick: (String) -> Unit
+    onProductClick: (String) -> Unit,
+    onDeleteSearch: (com.products.app.domain.model.SearchHistory) -> Unit,
+    onClearAllSearches: () -> Unit,
+    onDeleteViewedProduct: (com.products.app.domain.model.ViewedProduct) -> Unit,
+    onClearAllViewedProducts: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -192,14 +200,18 @@ private fun ContentSections(
         if (recentSearches.isNotEmpty()) {
             RecentSearchesSection(
                 recentSearches = recentSearches,
-                onSearchClick = onSearchClick
+                onSearchClick = onSearchClick,
+                onDeleteSearch = onDeleteSearch,
+                onClearAllSearches = onClearAllSearches
             )
         }
         
         if (recentViewedProducts.isNotEmpty()) {
             RecentViewedProductsSection(
                 recentViewedProducts = recentViewedProducts,
-                onProductClick = onProductClick
+                onProductClick = onProductClick,
+                onDeleteViewedProduct = onDeleteViewedProduct,
+                onClearAllViewedProducts = onClearAllViewedProducts
             )
         }
     }
@@ -208,7 +220,9 @@ private fun ContentSections(
 @Composable
 private fun RecentSearchesSection(
     recentSearches: List<com.products.app.domain.model.SearchHistory>,
-    onSearchClick: (String) -> Unit
+    onSearchClick: (String) -> Unit,
+    onDeleteSearch: (com.products.app.domain.model.SearchHistory) -> Unit,
+    onClearAllSearches: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -222,21 +236,39 @@ private fun RecentSearchesSection(
             modifier = Modifier.padding(16.dp)
         ) {
             Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_schedule_24),
-                    contentDescription = stringResource(R.string.recent_searches),
-                    modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(R.string.recent_searches),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_schedule_24),
+                        contentDescription = stringResource(R.string.recent_searches),
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.recent_searches),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                
+                IconButton(
+                    onClick = onClearAllSearches,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.clear_all),
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
             
             Spacer(modifier = Modifier.height(12.dp))
@@ -266,12 +298,30 @@ private fun RecentSearchesSection(
                         shape = RoundedCornerShape(8.dp),
                         color = MaterialTheme.colorScheme.primaryContainer
                     ) {
-                        Text(
-                            text = search.query,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = search.query,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            
+                            Spacer(modifier = Modifier.width(8.dp))
+                            
+                            IconButton(
+                                onClick = { onDeleteSearch(search) },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = stringResource(R.string.delete),
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -282,7 +332,9 @@ private fun RecentSearchesSection(
 @Composable
 private fun RecentViewedProductsSection(
     recentViewedProducts: List<com.products.app.domain.model.ViewedProduct>,
-    onProductClick: (String) -> Unit
+    onProductClick: (String) -> Unit,
+    onDeleteViewedProduct: (com.products.app.domain.model.ViewedProduct) -> Unit,
+    onClearAllViewedProducts: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -296,21 +348,39 @@ private fun RecentViewedProductsSection(
             modifier = Modifier.padding(16.dp)
         ) {
             Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = stringResource(R.string.recently_viewed),
-                    modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(R.string.recently_viewed),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = stringResource(R.string.recently_viewed),
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.recently_viewed),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                
+                IconButton(
+                    onClick = onClearAllViewedProducts,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.clear_all),
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
             
             Spacer(modifier = Modifier.height(12.dp))
@@ -323,7 +393,8 @@ private fun RecentViewedProductsSection(
                     ViewedProductCard(
                         modifier = Modifier.width(140.dp),
                         product = product,
-                        onProductClick = onProductClick
+                        onProductClick = onProductClick,
+                        onDeleteClick = onDeleteViewedProduct
                     )
                 }
             }

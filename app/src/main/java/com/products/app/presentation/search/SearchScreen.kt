@@ -40,7 +40,11 @@ fun SearchScreen(
                 viewModel.onSuggestionClick(suggestion)
                 onSearchClick(suggestion.query)
             },
-            onProductClick = onProductClick
+            onProductClick = onProductClick,
+            onDeleteSearch = { search -> viewModel.deleteSearch(search) },
+            onClearAllSearches = { viewModel.clearAllSearches() },
+            onDeleteViewedProduct = { product -> viewModel.deleteViewedProduct(product) },
+            onClearAllViewedProducts = { viewModel.clearAllViewedProducts() }
         )
     }
 }

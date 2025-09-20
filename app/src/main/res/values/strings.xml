@@ -67,4 +67,6 @@
     <string name="complete_text">Complete text</string>
     <string name="what_are_you_looking_for">What are you looking for?</string>
     <string name="product_placeholder">Product</string>
+    <string name="delete">Delete</string>
+    <string name="clear_all">Clear all</string>
 </resources>

@@ -15,7 +15,11 @@ class HomeViewModel @Inject constructor(
     private val getMatchingSearchesUseCase: GetMatchingSearchesUseCase,
     private val getAutosuggestUseCase: GetAutosuggestUseCase,
     private val getRecentViewedProductsUseCase: GetRecentViewedProductsUseCase,
-    private val saveSearchUseCase: SaveSearchUseCase
+    private val saveSearchUseCase: SaveSearchUseCase,
+    private val deleteSearchUseCase: DeleteSearchUseCase,
+    private val clearAllSearchesUseCase: ClearAllSearchesUseCase,
+    private val deleteViewedProductUseCase: DeleteViewedProductUseCase,
+    private val clearAllViewedProductsUseCase: ClearAllViewedProductsUseCase
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -146,5 +150,29 @@ class HomeViewModel @Inject constructor(
             showSearchHistory = false
         )
         loadRecentHistory()
+    }
+    
+    fun deleteSearch(search: SearchHistory) {
+        viewModelScope.launch {
+            deleteSearchUseCase(search)
+        }
+    }
+    
+    fun clearAllSearches() {
+        viewModelScope.launch {
+            clearAllSearchesUseCase()
+        }
+    }
+    
+    fun deleteViewedProduct(viewedProduct: com.products.app.domain.model.ViewedProduct) {
+        viewModelScope.launch {
+            deleteViewedProductUseCase(viewedProduct)
+        }
+    }
+    
+    fun clearAllViewedProducts() {
+        viewModelScope.launch {
+            clearAllViewedProductsUseCase()
+        }
     }
 }

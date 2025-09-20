@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,7 +28,7 @@ import com.products.app.domain.model.ViewedProduct
 fun SearchHistoryItem(
     history: SearchHistory,
     onClick: () -> Unit,
-    onComplete: () -> Unit,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -56,13 +57,13 @@ fun SearchHistoryItem(
         Spacer(modifier = Modifier.width(8.dp))
         
         IconButton(
-            onClick = onComplete,
+            onClick = onDelete,
             modifier = Modifier.size(32.dp)
         ) {
             Icon(
-                painter = painterResource(R.drawable.arrow_insert_24),
-                contentDescription = stringResource(R.string.complete_text),
-                tint = MaterialTheme.colorScheme.primary,
+                imageVector = androidx.compose.material.icons.Icons.Default.Close,
+                contentDescription = stringResource(R.string.delete),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -144,6 +145,7 @@ fun SearchSuggestionItem(
 fun RecentViewedProductItem(
     product: ViewedProduct,
     onClick: () -> Unit,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -177,7 +179,22 @@ fun RecentViewedProductItem(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
         )
+        
+        Spacer(modifier = Modifier.width(8.dp))
+        
+        IconButton(
+            onClick = onDelete,
+            modifier = Modifier.size(32.dp)
+        ) {
+            Icon(
+                imageVector = androidx.compose.material.icons.Icons.Default.Close,
+                contentDescription = stringResource(R.string.delete),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp)
+            )
+        }
     }
 }

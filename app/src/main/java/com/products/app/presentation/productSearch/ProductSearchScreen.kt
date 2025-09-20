@@ -32,14 +32,17 @@ fun ProductSearchScreen(
     initialQuery: String = "",
     onProductClick: (com.products.app.domain.model.Product) -> Unit = {},
     onBackClick: () -> Unit = {},
-    vm: ProductSearchViewModel = hiltViewModel()
+    vm: ProductSearchViewModel = hiltViewModel(key = "product_search_$initialQuery")
 ) {
     val state by vm.ui.collectAsState()
     
     LaunchedEffect(initialQuery) {
         if (initialQuery.isNotBlank()) {
             vm.onQueryChange(initialQuery)
-            vm.searchFirstPage()
+            val currentState = vm.ui.value
+            if (currentState.products.isEmpty()) {
+                vm.searchFirstPage()
+            }
         }
     }
 

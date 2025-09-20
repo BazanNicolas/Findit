@@ -22,6 +22,14 @@ class ViewedProductRepositoryImpl @Inject constructor(
         viewedProductDao.insertViewedProduct(viewedProduct.toEntity())
     }
     
+    override suspend fun deleteViewedProduct(viewedProduct: ViewedProduct) {
+        viewedProductDao.deleteViewedProduct(viewedProduct.toEntity())
+    }
+    
+    override suspend fun clearAllViewedProducts() {
+        viewedProductDao.clearAllViewedProducts()
+    }
+    
     override suspend fun clearOldViewedProducts() {
         val cutoffTime = System.currentTimeMillis() - (30 * 24 * 60 * 60 * 1000L) // 30 days
         viewedProductDao.deleteOldViewedProducts(cutoffTime)

@@ -13,6 +13,9 @@ interface ViewedProductDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertViewedProduct(viewedProduct: ViewedProductEntity)
     
+    @Delete
+    suspend fun deleteViewedProduct(viewedProduct: ViewedProductEntity)
+    
     @Query("DELETE FROM viewed_products WHERE timestamp < :cutoffTime")
     suspend fun deleteOldViewedProducts(cutoffTime: Long)
     

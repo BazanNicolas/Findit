@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +23,10 @@ fun SearchContent(
     onHistoryClick: (SearchHistory) -> Unit,
     onSuggestionClick: (SearchSuggestion) -> Unit,
     onProductClick: (String) -> Unit,
+    onDeleteSearch: (SearchHistory) -> Unit,
+    onClearAllSearches: () -> Unit,
+    onDeleteViewedProduct: (ViewedProduct) -> Unit,
+    onClearAllViewedProducts: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -35,8 +41,9 @@ fun SearchContent(
         } else {
             if (uiState.searchHistory.isNotEmpty()) {
                 item {
-                    SectionHeader(
-                        title = stringResource(R.string.recent_searches)
+                    SectionHeaderWithClearButton(
+                        title = stringResource(R.string.recent_searches),
+                        onClearAll = onClearAllSearches
                     )
                 }
                 
@@ -44,7 +51,7 @@ fun SearchContent(
                     SearchHistoryItem(
                         history = history,
                         onClick = { onHistoryClick(history) },
-                        onComplete = { onHistoryClick(history) }
+                        onDelete = { onDeleteSearch(history) }
                     )
                 }
             }
@@ -67,15 +74,17 @@ fun SearchContent(
             
             if (uiState.recentViewedProducts.isNotEmpty()) {
                 item {
-                    SectionHeader(
-                        title = stringResource(R.string.recently_viewed)
+                    SectionHeaderWithClearButton(
+                        title = stringResource(R.string.recently_viewed),
+                        onClearAll = onClearAllViewedProducts
                     )
                 }
                 
                 items(uiState.recentViewedProducts) { product ->
                     RecentViewedProductItem(
                         product = product,
-                        onClick = { onProductClick(product.productId) }
+                        onClick = { onProductClick(product.productId) },
+                        onDelete = { onDeleteViewedProduct(product) }
                     )
                 }
             }
@@ -117,4 +126,38 @@ private fun SectionHeader(
         color = MaterialTheme.colorScheme.onSurface,
         modifier = modifier.padding(vertical = 8.dp)
     )
+}
+
+@Composable
+private fun SectionHeaderWithClearButton(
+    title: String,
+    onClearAll: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        
+        IconButton(
+            onClick = onClearAll,
+            modifier = Modifier.size(32.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = stringResource(R.string.clear_all),
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp)
+            )
+        }
+    }
 }
