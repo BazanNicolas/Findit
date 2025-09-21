@@ -64,8 +64,6 @@ import com.products.app.presentation.common.components.LoadingState
 import com.products.app.presentation.common.components.AppLogo
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
 /**
  * Composable screen that displays detailed information about a specific product.
  * 
@@ -84,6 +82,7 @@ import kotlinx.coroutines.launch
  * @param onBackClick Callback invoked when the back button is pressed
  * @param viewModel The ProductDetailViewModel instance for managing state
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
     productId: String,
