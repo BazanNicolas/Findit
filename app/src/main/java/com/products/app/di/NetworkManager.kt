@@ -82,11 +82,4 @@ object NetworkModule {
     fun provideAutosuggestApi(@Named("autosuggest") retrofit: Retrofit): AutosuggestApi =
         retrofit.create(AutosuggestApi::class.java)
 
-    @Provides @Singleton
-    fun provideRepo(api: ProductsApi, errorHandler: NetworkErrorHandler): ProductsRepository =
-        ProductsRepositoryImpl(api, errorHandler)
-
-    @Provides @Singleton
-    fun provideAutosuggestRepo(@Named("autosuggest") autosuggestApi: AutosuggestApi, errorHandler: NetworkErrorHandler): AutosuggestRepository =
-        AutosuggestRepositoryImpl(autosuggestApi, errorHandler)
 }

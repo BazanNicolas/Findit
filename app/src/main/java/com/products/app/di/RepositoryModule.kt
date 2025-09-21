@@ -1,12 +1,19 @@
 package com.products.app.di
 
 import com.products.app.core.NetworkErrorHandler
+import com.products.app.data.repository.AutosuggestRepositoryImpl
 import com.products.app.data.repository.ProductDetailRepositoryImpl
+import com.products.app.data.repository.ProductsRepositoryImpl
 import com.products.app.data.repository.SearchHistoryRepositoryImpl
 import com.products.app.data.repository.ViewedProductRepositoryImpl
+import com.products.app.data.remote.AutosuggestApi
+import com.products.app.data.remote.ProductsApi
+import com.products.app.domain.repository.AutosuggestRepository
 import com.products.app.domain.repository.ProductDetailRepository
+import com.products.app.domain.repository.ProductsRepository
 import com.products.app.domain.repository.SearchHistoryRepository
 import com.products.app.domain.repository.ViewedProductRepository
+import javax.inject.Named
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -77,4 +84,40 @@ object RepositoryModule {
         viewedProductDao: com.products.app.data.local.dao.ViewedProductDao
     ): ViewedProductRepository =
         ViewedProductRepositoryImpl(viewedProductDao)
+    
+    /**
+     * Provides the ProductsRepository implementation.
+     * 
+     * This repository handles product search operations from the MercadoLibre API.
+     * It provides methods for searching products with pagination support.
+     * 
+     * @param productsApi The Retrofit API interface for product search
+     * @param errorHandler The NetworkErrorHandler for processing API errors
+     * @return ProductsRepository implementation
+     */
+    @Provides
+    @Singleton
+    fun provideProductsRepository(
+        productsApi: ProductsApi,
+        errorHandler: NetworkErrorHandler
+    ): ProductsRepository =
+        ProductsRepositoryImpl(productsApi, errorHandler)
+    
+    /**
+     * Provides the AutosuggestRepository implementation.
+     * 
+     * This repository handles autocomplete suggestions from the MercadoLibre API.
+     * It provides real-time search suggestions for improved user experience.
+     * 
+     * @param autosuggestApi The Retrofit API interface for autosuggest operations
+     * @param errorHandler The NetworkErrorHandler for processing API errors
+     * @return AutosuggestRepository implementation
+     */
+    @Provides
+    @Singleton
+    fun provideAutosuggestRepository(
+        @Named("autosuggest") autosuggestApi: AutosuggestApi,
+        errorHandler: NetworkErrorHandler
+    ): AutosuggestRepository =
+        AutosuggestRepositoryImpl(autosuggestApi, errorHandler)
 }
