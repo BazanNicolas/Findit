@@ -26,6 +26,25 @@ import com.products.app.presentation.common.components.ProductCard
 import com.products.app.presentation.common.components.AppLogo
 import com.products.app.presentation.productSearch.components.InfiniteScrollHandler
 
+/**
+ * Composable screen that displays search results for products in a staggered grid layout.
+ * 
+ * This screen provides a comprehensive product search experience including:
+ * - Staggered grid layout for optimal product display
+ * - Infinite scrolling with pagination support
+ * - Loading states and error handling
+ * - Empty state when no results are found
+ * - Search query persistence and management
+ * 
+ * The screen automatically performs an initial search if an initialQuery is provided
+ * and handles pagination through infinite scrolling. It follows Material Design 3
+ * principles with a clean, responsive layout.
+ * 
+ * @param initialQuery The initial search query to perform (optional)
+ * @param onProductClick Callback invoked when a product is selected
+ * @param onBackClick Callback invoked when the back button is pressed
+ * @param vm The ProductSearchViewModel instance for managing state
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductSearchScreen(

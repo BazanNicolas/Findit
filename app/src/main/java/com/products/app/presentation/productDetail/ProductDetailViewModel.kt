@@ -12,6 +12,20 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Product Detail screen that manages product information display.
+ * 
+ * This ViewModel handles loading detailed product information and automatically
+ * saves viewed products to the user's viewing history. It coordinates between
+ * the product detail use case and the viewed product tracking use case.
+ * 
+ * The ViewModel follows the MVVM pattern and uses StateFlow to expose UI state
+ * changes to the Compose UI. It manages loading states, error handling, and
+ * automatic tracking of viewed products for history management.
+ * 
+ * @param getProductDetailUseCase Use case for retrieving detailed product information
+ * @param saveViewedProductUseCase Use case for saving viewed products to history
+ */
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     private val getProductDetailUseCase: GetProductDetailUseCase,

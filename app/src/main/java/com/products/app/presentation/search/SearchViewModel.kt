@@ -9,6 +9,28 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Search screen that manages search functionality and history.
+ * 
+ * This ViewModel coordinates multiple use cases to provide comprehensive search
+ * functionality including autocomplete suggestions, search history management,
+ * and recently viewed products. It handles real-time search suggestions from
+ * the MercadoLibre API and manages local search history.
+ * 
+ * The ViewModel follows the MVVM pattern and uses StateFlow to expose UI state
+ * changes to the Compose UI. It automatically loads initial data and provides
+ * reactive updates for search suggestions and history management.
+ * 
+ * @param getRecentSearchesUseCase Use case for retrieving recent search history
+ * @param getMatchingSearchesUseCase Use case for finding matching search history
+ * @param getAutosuggestUseCase Use case for fetching API search suggestions
+ * @param getRecentViewedProductsUseCase Use case for retrieving recently viewed products
+ * @param saveSearchUseCase Use case for saving search queries to history
+ * @param deleteSearchUseCase Use case for deleting individual search history entries
+ * @param clearAllSearchesUseCase Use case for clearing all search history
+ * @param deleteViewedProductUseCase Use case for deleting individual viewed products
+ * @param clearAllViewedProductsUseCase Use case for clearing all viewed products
+ */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val getRecentSearchesUseCase: GetRecentSearchesUseCase,

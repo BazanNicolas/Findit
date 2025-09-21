@@ -66,6 +66,25 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+/**
+ * Composable screen that displays detailed information about a specific product.
+ * 
+ * This screen provides comprehensive product details including:
+ * - Product images in a horizontal pager gallery
+ * - Product name and family information
+ * - Main features and specifications
+ * - Product variants and pickers
+ * - Detailed attributes and descriptions
+ * 
+ * The screen automatically loads product details when the productId changes
+ * and handles loading states, error states, and empty states gracefully.
+ * It follows Material Design 3 principles with a clean, scrollable layout.
+ * 
+ * @param productId The unique identifier of the product to display
+ * @param onBackClick Callback invoked when the back button is pressed
+ * @param viewModel The ProductDetailViewModel instance for managing state
+ */
+@Composable
 fun ProductDetailScreen(
     productId: String,
     onBackClick: () -> Unit,
