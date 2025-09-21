@@ -17,7 +17,6 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoRule
 import org.mockito.kotlin.*
-import retrofit2.Retrofit
 import java.io.IOException
 
 @ExperimentalCoroutinesApi
@@ -30,9 +29,6 @@ class AutosuggestRepositoryImplTest {
     val coroutineRule = TestCoroutineRule()
 
     @Mock
-    private lateinit var retrofit: Retrofit
-
-    @Mock
     private lateinit var autosuggestApi: AutosuggestApi
 
     @Mock
@@ -42,8 +38,7 @@ class AutosuggestRepositoryImplTest {
 
     @Before
     fun setUp() {
-        whenever(retrofit.create(AutosuggestApi::class.java)).thenReturn(autosuggestApi)
-        repository = AutosuggestRepositoryImpl(retrofit, errorHandler)
+        repository = AutosuggestRepositoryImpl(autosuggestApi, errorHandler)
     }
 
     @Test

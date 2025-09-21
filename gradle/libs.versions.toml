@@ -27,8 +27,8 @@ composeBom = "2025.09.00"                       # Compose BOM ensures compatible
 junit = "4.13.2"                                 # Unit testing framework
 junitVersion = "1.3.0"                          # Android-specific JUnit extensions
 espressoCore = "3.7.0"                          # UI testing framework
-testRunner = "1.5.2"                            # Android test runner
-testRules = "1.5.2"                             # Android test rules
+testRunner = "1.7.0"                            # Android test runner
+testRules = "1.7.0"                             # Android test rules
 
 # JSON Serialization
 moshi = "1.15.2"                                 # JSON serialization/deserialization
