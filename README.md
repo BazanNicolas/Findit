@@ -181,24 +181,6 @@ app/src/main/java/com/products/app/
     └── search/             # Search screen
 ```
 
-## 🔄 Data Flow
-
-1. **User Input** → ViewModel receives user actions
-2. **Use Case** → ViewModel calls appropriate use case
-3. **Repository** → Use case delegates to repository
-4. **Data Source** → Repository coordinates between local/remote sources
-5. **Domain Model** → Data is transformed to domain models
-6. **UI State** → ViewModel updates UI state
-7. **Compose UI** → UI automatically recomposes with new state
-
-## 🎨 Design System
-
-The app follows Material Design 3 principles with:
-- **Dynamic Color** support for Android 12+
-- **Consistent Typography** using Material Design type scale
-- **Accessible Colors** with proper contrast ratios
-- **Responsive Layout** adapting to different screen sizes
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
