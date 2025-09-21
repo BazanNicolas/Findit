@@ -18,6 +18,7 @@ ksp = "2.0.21-1.0.25"                           # Kotlin Symbol Processing for c
 coreKtx = "1.17.0"                              # Kotlin extensions for Android core
 lifecycleRuntimeKtx = "2.9.4"                   # Lifecycle-aware components with Kotlin support
 activityCompose = "1.11.0"                      # Compose integration for Activities
+splashScreen = "1.0.1"                          # Splash Screen API for Android 12+
 
 # Jetpack Compose UI Framework
 composeBom = "2025.09.00"                       # Compose BOM ensures compatible versions
@@ -56,6 +57,7 @@ archCoreTesting = "2.2.0"                       # Architecture components testin
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashScreen" }
 
 # Jetpack Compose UI Framework
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }

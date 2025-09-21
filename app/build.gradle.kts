@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.splashscreen)
     
     // Jetpack Compose UI Framework
     implementation(platform(libs.androidx.compose.bom))

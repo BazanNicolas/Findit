@@ -16,6 +16,7 @@ import com.products.app.presentation.productDetail.ProductDetailScreen
 import com.products.app.presentation.productSearch.ProductSearchScreen
 import com.products.app.presentation.search.SearchScreen
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 /**
  * Main activity that serves as the entry point of the Products application.
@@ -41,6 +42,10 @@ class MainActivity : ComponentActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Install splash screen
+        installSplashScreen()
+        
         setContent {
             ProductsApp {
                 val navController = rememberNavController()
