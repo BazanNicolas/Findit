@@ -1,4 +1,4 @@
-# Products Android App
+# Findit Android App
 
 A modern Android application for searching and browsing products using the MercadoLibre API. Built with Jetpack Compose, Clean Architecture, and modern Android development practices.
 
@@ -54,10 +54,9 @@ This app follows **Clean Architecture** principles with clear separation of conc
 
 ### Testing
 - **JUnit** - Unit testing framework
-- **Mockito** - Mocking framework
+- **MockK** - Mocking framework for Kotlin
 - **Truth** - Fluent assertions
 - **Turbine** - Flow testing utilities
-- **Espresso** - UI testing framework
 
 ## 📱 Screens
 
@@ -96,7 +95,7 @@ This app follows **Clean Architecture** principles with clear separation of conc
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd Products
+   cd Findit
    ```
 
 2. **Configure API credentials**
@@ -119,16 +118,6 @@ This app follows **Clean Architecture** principles with clear separation of conc
 ### Unit Tests
 ```bash
 ./gradlew test
-```
-
-### Instrumentation Tests
-```bash
-./gradlew connectedAndroidTest
-```
-
-### Test Coverage
-```bash
-./gradlew jacocoTestReport
 ```
 
 ## 📦 Dependencies
@@ -209,39 +198,6 @@ The app follows Material Design 3 principles with:
 - **Consistent Typography** using Material Design type scale
 - **Accessible Colors** with proper contrast ratios
 - **Responsive Layout** adapting to different screen sizes
-
-## 🚀 Performance Optimizations
-
-- **Lazy Loading** for product lists with pagination
-- **Image Caching** with Coil for efficient memory usage
-- **Database Indexing** for fast search history queries
-- **Network Caching** with OkHttp for reduced API calls
-- **Compose Optimizations** with proper state management
-
-## 🔒 Security
-
-- **API Credentials** stored securely in local.properties
-- **Network Security** with HTTPS enforcement
-- **Data Validation** on all user inputs
-- **Error Handling** without exposing sensitive information
-
-## 📈 Future Enhancements
-
-- [ ] **Favorites System** - Save favorite products
-- [ ] **Product Comparisons** - Compare multiple products
-- [ ] **Price Alerts** - Notifications for price changes
-- [ ] **Dark Theme** - Complete dark mode support
-- [ ] **Internationalization** - Multi-language support
-- [ ] **Analytics** - User behavior tracking
-- [ ] **Push Notifications** - Real-time updates
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## 📄 License
 
