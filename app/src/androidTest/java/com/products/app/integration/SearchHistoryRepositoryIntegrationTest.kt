@@ -4,7 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.common.truth.Truth.assertThat
+import org.junit.Assert.*
 import com.products.app.data.local.database.ProductsDatabase
 import com.products.app.data.repository.SearchHistoryRepositoryImpl
 import com.products.app.domain.repository.SearchHistoryRepository
@@ -69,11 +69,11 @@ class SearchHistoryRepositoryIntegrationTest {
 
         // Then
         val recentSearches = repository.getRecentSearches(10)
-        assertThat(recentSearches).isInstanceOf(com.products.app.core.AppResult.Success::class.java)
+        var searchList: List<com.products.app.domain.model.SearchHistory> = emptyList()
+        recentSearches.collect { searchList = it }
         
-        val successResult = recentSearches as com.products.app.core.AppResult.Success
-        assertThat(successResult.data).isNotEmpty()
-        assertThat(successResult.data.first().query).isEqualTo(query)
+        assertFalse(searchList.isEmpty())
+        assertEquals(query, searchList.first().query)
     }
 
     /**
@@ -93,13 +93,13 @@ class SearchHistoryRepositoryIntegrationTest {
 
         // Then
         val recentSearches = repository.getRecentSearches(10)
-        assertThat(recentSearches).isInstanceOf(com.products.app.core.AppResult.Success::class.java)
+        var searchList: List<com.products.app.domain.model.SearchHistory> = emptyList()
+        recentSearches.collect { searchList = it }
         
-        val successResult = recentSearches as com.products.app.core.AppResult.Success
-        val savedQueries = successResult.data.map { it.query }
+        val savedQueries = searchList.map { it.query }
         
         // Should be in reverse chronological order (most recent first)
-        assertThat(savedQueries).isEqualTo(queries.reversed())
+        assertEquals(queries.reversed(), savedQueries)
     }
 
     /**
@@ -119,10 +119,10 @@ class SearchHistoryRepositoryIntegrationTest {
 
         // Then
         val recentSearches = repository.getRecentSearches(limit)
-        assertThat(recentSearches).isInstanceOf(com.products.app.core.AppResult.Success::class.java)
+        var searchList: List<com.products.app.domain.model.SearchHistory> = emptyList()
+        recentSearches.collect { searchList = it }
         
-        val successResult = recentSearches as com.products.app.core.AppResult.Success
-        assertThat(successResult.data.size).isEqualTo(limit)
+        assertEquals(limit, searchList.size)
     }
 
     /**
@@ -138,17 +138,23 @@ class SearchHistoryRepositoryIntegrationTest {
         repository.saveSearch(queryToKeep)
 
         // When
-        repository.deleteSearch(queryToDelete)
+        val recentSearchesBefore = repository.getRecentSearches(10)
+        var searchListBefore: List<com.products.app.domain.model.SearchHistory> = emptyList()
+        recentSearchesBefore.collect { searchListBefore = it }
+        
+        val searchToDelete = searchListBefore.find { it.query == queryToDelete }
+        if (searchToDelete != null) {
+            repository.deleteSearch(searchToDelete)
+        }
 
         // Then
         val recentSearches = repository.getRecentSearches(10)
-        assertThat(recentSearches).isInstanceOf(com.products.app.core.AppResult.Success::class.java)
+        var searchList: List<com.products.app.domain.model.SearchHistory> = emptyList()
+        recentSearches.collect { searchList = it }
         
-        val successResult = recentSearches as com.products.app.core.AppResult.Success
-        val savedQueries = successResult.data.map { it.query }
-        
-        assertThat(savedQueries).contains(queryToKeep)
-        assertThat(savedQueries).doesNotContain(queryToDelete)
+        val savedQueries = searchList.map { it.query }
+        assertTrue(savedQueries.contains(queryToKeep))
+        assertFalse(savedQueries.contains(queryToDelete))
     }
 
     /**
@@ -167,10 +173,10 @@ class SearchHistoryRepositoryIntegrationTest {
 
         // Then
         val recentSearches = repository.getRecentSearches(10)
-        assertThat(recentSearches).isInstanceOf(com.products.app.core.AppResult.Success::class.java)
+        var searchList: List<com.products.app.domain.model.SearchHistory> = emptyList()
+        recentSearches.collect { searchList = it }
         
-        val successResult = recentSearches as com.products.app.core.AppResult.Success
-        assertThat(successResult.data).isEmpty()
+        assertTrue(searchList.isEmpty())
     }
 
     /**
@@ -188,13 +194,13 @@ class SearchHistoryRepositoryIntegrationTest {
 
         // Then
         val recentSearches = repository.getRecentSearches(10)
-        assertThat(recentSearches).isInstanceOf(com.products.app.core.AppResult.Success::class.java)
+        var searchList: List<com.products.app.domain.model.SearchHistory> = emptyList()
+        recentSearches.collect { searchList = it }
         
-        val successResult = recentSearches as com.products.app.core.AppResult.Success
-        val savedQueries = successResult.data.map { it.query }
+        val savedQueries = searchList.map { it.query }
         
         // Should have two entries for the same query
-        assertThat(savedQueries.filter { it == query }).hasSize(2)
+        assertEquals(2, savedQueries.filter { it == query }.size)
     }
 
     /**
@@ -211,17 +217,16 @@ class SearchHistoryRepositoryIntegrationTest {
 
         // When
         val matchingSearches = repository.getMatchingSearches("iPhone")
+        var matchingList: List<com.products.app.domain.model.SearchHistory> = emptyList()
+        matchingSearches.collect { matchingList = it }
 
         // Then
-        assertThat(matchingSearches).isInstanceOf(com.products.app.core.AppResult.Success::class.java)
+        val matchingQueries = matchingList.map { it.query }
         
-        val successResult = matchingSearches as com.products.app.core.AppResult.Success
-        val matchingQueries = successResult.data.map { it.query }
-        
-        assertThat(matchingQueries).contains("iPhone 15")
-        assertThat(matchingQueries).contains("iPhone 14")
-        assertThat(matchingQueries).doesNotContain("Samsung Galaxy")
-        assertThat(matchingQueries).doesNotContain("iPad Pro")
+        assertTrue(matchingQueries.contains("iPhone 15"))
+        assertTrue(matchingQueries.contains("iPhone 14"))
+        assertFalse(matchingQueries.contains("Samsung Galaxy"))
+        assertFalse(matchingQueries.contains("iPad Pro"))
     }
 
     /**
@@ -231,11 +236,10 @@ class SearchHistoryRepositoryIntegrationTest {
     fun getRecentSearches_withEmptyDatabase_shouldReturnEmptyList() = runTest {
         // When
         val recentSearches = repository.getRecentSearches(10)
+        var searchList: List<com.products.app.domain.model.SearchHistory> = emptyList()
+        recentSearches.collect { searchList = it }
 
         // Then
-        assertThat(recentSearches).isInstanceOf(com.products.app.core.AppResult.Success::class.java)
-        
-        val successResult = recentSearches as com.products.app.core.AppResult.Success
-        assertThat(successResult.data).isEmpty()
+        assertTrue(searchList.isEmpty())
     }
 }

@@ -3,7 +3,7 @@ package com.products.app.integration
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.common.truth.Truth.assertThat
+import org.junit.Assert.*
 import com.products.app.core.NetworkErrorHandler
 import com.products.app.data.repository.ProductsRepositoryImpl
 import com.products.app.data.remote.ProductsApi
@@ -89,15 +89,15 @@ class ProductsRepositoryIntegrationTest {
         val limit = 20
 
         // When
-        val result = repository.searchProducts(query, offset, limit)
+        val result = repository.search(query, offset, limit)
 
         // Then
-        assertThat(result).isInstanceOf(com.products.app.core.AppResult.Success::class.java)
+        assertTrue(result is com.products.app.core.AppResult.Success)
         
-        val successResult = result as com.products.app.core.AppResult.Success
-        assertThat(successResult.data.products).isNotEmpty()
-        assertThat(successResult.data.products.first().title).contains("iPhone")
-        assertThat(successResult.data.paging).isNotNull()
+        val successResult = result as com.products.app.core.AppResult.Success<com.products.app.domain.model.ProductSearchResult>
+        assertFalse(successResult.data.products.isEmpty())
+        assertTrue(successResult.data.products.first().name.contains("iPhone"))
+        assertNotNull(successResult.data.paging)
     }
 
     /**
@@ -111,13 +111,13 @@ class ProductsRepositoryIntegrationTest {
         val limit = 20
 
         // When
-        val result = repository.searchProducts(query, offset, limit)
+        val result = repository.search(query, offset, limit)
 
         // Then
-        assertThat(result).isInstanceOf(com.products.app.core.AppResult.Success::class.java)
+        assertTrue(result is com.products.app.core.AppResult.Success)
         
-        val successResult = result as com.products.app.core.AppResult.Success
-        assertThat(successResult.data.products).isEmpty()
+        val successResult = result as com.products.app.core.AppResult.Success<com.products.app.domain.model.ProductSearchResult>
+        assertTrue(successResult.data.products.isEmpty())
     }
 
     /**
@@ -132,21 +132,21 @@ class ProductsRepositoryIntegrationTest {
         val limit = 10
 
         // When
-        val firstPageResult = repository.searchProducts(query, firstPageOffset, limit)
-        val secondPageResult = repository.searchProducts(query, secondPageOffset, limit)
+        val firstPageResult = repository.search(query, firstPageOffset, limit)
+        val secondPageResult = repository.search(query, secondPageOffset, limit)
 
         // Then
-        assertThat(firstPageResult).isInstanceOf(com.products.app.core.AppResult.Success::class.java)
-        assertThat(secondPageResult).isInstanceOf(com.products.app.core.AppResult.Success::class.java)
+        assertTrue(firstPageResult is com.products.app.core.AppResult.Success)
+        assertTrue(secondPageResult is com.products.app.core.AppResult.Success)
         
-        val firstPage = firstPageResult as com.products.app.core.AppResult.Success
-        val secondPage = secondPageResult as com.products.app.core.AppResult.Success
+        val firstPage = firstPageResult as com.products.app.core.AppResult.Success<com.products.app.domain.model.ProductSearchResult>
+        val secondPage = secondPageResult as com.products.app.core.AppResult.Success<com.products.app.domain.model.ProductSearchResult>
         
         // Results should be different (different products)
         val firstPageIds = firstPage.data.products.map { it.id }
         val secondPageIds = secondPage.data.products.map { it.id }
         
-        assertThat(firstPageIds).isNotEqualTo(secondPageIds)
+        assertNotEquals(firstPageIds, secondPageIds)
     }
 
     /**
@@ -160,12 +160,12 @@ class ProductsRepositoryIntegrationTest {
         val limit = 0
 
         // When
-        val result = repository.searchProducts(query, offset, limit)
+        val result = repository.search(query, offset, limit)
 
         // Then
         // The API might return empty results or the repository might handle it
         // This test verifies that no exceptions are thrown
-        assertThat(result).isNotNull()
+        assertNotNull(result)
     }
 
     /**
@@ -179,13 +179,13 @@ class ProductsRepositoryIntegrationTest {
         val limit = 50
 
         // When
-        val result = repository.searchProducts(query, offset, limit)
+        val result = repository.search(query, offset, limit)
 
         // Then
-        assertThat(result).isInstanceOf(com.products.app.core.AppResult.Success::class.java)
+        assertTrue(result is com.products.app.core.AppResult.Success)
         
-        val successResult = result as com.products.app.core.AppResult.Success
-        assertThat(successResult.data.products).isNotEmpty()
-        assertThat(successResult.data.products.size).isAtMost(limit)
+        val successResult = result as com.products.app.core.AppResult.Success<com.products.app.domain.model.ProductSearchResult>
+        assertFalse(successResult.data.products.isEmpty())
+        assertTrue(successResult.data.products.size <= limit)
     }
 }
