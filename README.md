@@ -120,6 +120,11 @@ This app follows **Clean Architecture** principles with clear separation of conc
 ./gradlew test
 ```
 
+### Integration Tests
+```bash
+./gradlew connectedAndroidTest
+```
+
 ## 📦 Dependencies
 
 ### Core Libraries

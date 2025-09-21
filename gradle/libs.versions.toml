@@ -27,6 +27,8 @@ composeBom = "2025.09.00"                       # Compose BOM ensures compatible
 junit = "4.13.2"                                 # Unit testing framework
 junitVersion = "1.3.0"                          # Android-specific JUnit extensions
 espressoCore = "3.7.0"                          # UI testing framework
+testRunner = "1.5.2"                            # Android test runner
+testRules = "1.5.2"                             # Android test rules
 
 # JSON Serialization
 moshi = "1.15.2"                                 # JSON serialization/deserialization
@@ -107,6 +109,9 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "testRunner" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "testRules" }
+androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
 
 # Mocking and Testing Utilities
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
