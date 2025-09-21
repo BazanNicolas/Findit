@@ -20,11 +20,11 @@ import javax.inject.Named
  * autosuggest operations, allowing for different configurations (like different
  * base URLs or interceptors) compared to the main products API.
  * 
- * @param retrofit The Retrofit instance configured for autosuggest API calls
+ * @param autosuggestApi The AutosuggestApi interface for autosuggest API calls
  * @param errorHandler The NetworkErrorHandler for processing and localizing errors
  */
 class AutosuggestRepositoryImpl @Inject constructor(
-    @param:Named("autosuggest") private val retrofit: Retrofit,
+    @param:Named("autosuggest") private val autosuggestApi: AutosuggestApi,
     private val errorHandler: NetworkErrorHandler
 ) : AutosuggestRepository {
 
@@ -46,8 +46,7 @@ class AutosuggestRepositoryImpl @Inject constructor(
         if (trimmedQuery.isEmpty()) {
             AppResult.Success(emptyList())
         } else {
-            val api = retrofit.create(AutosuggestApi::class.java)
-            val dto = api.getAutosuggest(query = trimmedQuery)
+            val dto = autosuggestApi.getAutosuggest(query = trimmedQuery)
             val suggestions = dto.toDomain()
             AppResult.Success(suggestions)
         }

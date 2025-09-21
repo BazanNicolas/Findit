@@ -87,6 +87,6 @@ object NetworkModule {
         ProductsRepositoryImpl(api, errorHandler)
 
     @Provides @Singleton
-    fun provideAutosuggestRepo(@Named("autosuggest") retrofit: Retrofit, errorHandler: NetworkErrorHandler): AutosuggestRepository =
-        AutosuggestRepositoryImpl(retrofit, errorHandler)
+    fun provideAutosuggestRepo(@Named("autosuggest") autosuggestApi: AutosuggestApi, errorHandler: NetworkErrorHandler): AutosuggestRepository =
+        AutosuggestRepositoryImpl(autosuggestApi, errorHandler)
 }
